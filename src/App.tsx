@@ -1,10 +1,14 @@
 import './App.css'
-import AlphaStudio from './pages/AlphaStudio'
+import { predefinedTemplates } from './lib/AgentTemplates'
+import { AlphaStudio } from './pages/AlphaStudio'
 
 function App() {
+
+  const agent = predefinedTemplates[0].config
+
   return (
     <div style={{ height: '100vh', width: '100vw', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'red' }}>
-      <AlphaStudio />
+      <AlphaStudio agent={agent} />
     </div>
   )
 }

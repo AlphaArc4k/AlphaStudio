@@ -13,7 +13,6 @@ export const MainContent: React.FC<MainContentProps> = ({ isResizing }) => {
           style={{ cursor: 'col-resize' }}
         />
       )}
-      {/* Add your main content here */}
       <div className="flex flex-1 overflow-hidden">
         <div>Main Content</div>
       </div>
