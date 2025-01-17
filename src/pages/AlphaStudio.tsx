@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { NavSection, NavSidebar } from '../fragments/NavSidebar';
 import { ConfigPanel } from '../fragments/ConfigPanel';
-import { Bot } from 'lucide-react';
+import { Bot, Brain, Database } from 'lucide-react';
 import { MainContent } from '../fragments/MainContent';
 import { Header } from '../fragments/Header';
+import { AgentConfig } from '../lib/AgentConfig';
+import { AgentProvider } from '../context/useAgentContext';
+import { AgentBasicConfig } from '../fragments/config/AgentBasicConfig';
 
-function AlphaStudio() {
+function AlphaStudioContent() {
 
   // missing injected
   const isActivated = true;
@@ -26,9 +29,9 @@ function AlphaStudio() {
 
   // Available sections configuration
   const sections: NavSection[] = [
-    { id: 'info', icon: Bot, label: 'Info' },
-    //{ id: 'data', icon: Database, label: 'Data', component: DatasourceConfig },
-    //{ id: 'llm', icon: Brain, label: 'LLM', component: LLMConfig },
+    { id: 'info', icon: Bot, label: 'Info', component: AgentBasicConfig },
+    { id: 'data', icon: Database, label: 'Data' },
+    { id: 'llm', icon: Brain, label: 'LLM' },
     //{ id: 'triggers', icon: Zap, label: 'Triggers', component: TriggersConfig },
     //{ id: 'actions', icon: Rocket, label: 'Actions', component: ActionsConfig },
     //{ id: 'knowledge', icon: GraduationCap, label: 'Knowledge' },
@@ -123,4 +126,13 @@ function AlphaStudio() {
   )
 }
 
-export default AlphaStudio
+interface AgentStudioProps {
+  agent?: Partial<AgentConfig>;
+}
+
+// Wrap the content with the provider
+export const AlphaStudio = ({ agent }: AgentStudioProps) => (
+  <AgentProvider initialConfig={agent}>
+    <AlphaStudioContent />
+  </AgentProvider>
+)
