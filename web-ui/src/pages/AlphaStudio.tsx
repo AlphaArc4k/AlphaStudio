@@ -7,6 +7,7 @@ import { Header } from '../fragments/Header';
 import { AgentConfig } from '../lib/AgentConfig';
 import { AgentProvider } from '../context/useAgentContext';
 import { AgentBasicConfig } from '../fragments/config/AgentBasicConfig';
+import LLMConfig from '../fragments/config/LlmConfig';
 
 function AlphaStudioContent() {
 
@@ -31,7 +32,7 @@ function AlphaStudioContent() {
   const sections: NavSection[] = [
     { id: 'info', icon: Bot, label: 'Info', component: AgentBasicConfig },
     { id: 'data', icon: Database, label: 'Data' },
-    { id: 'llm', icon: Brain, label: 'LLM' },
+    { id: 'llm', icon: Brain, label: 'LLM', component: LLMConfig },
     //{ id: 'triggers', icon: Zap, label: 'Triggers', component: TriggersConfig },
     //{ id: 'actions', icon: Rocket, label: 'Actions', component: ActionsConfig },
     //{ id: 'knowledge', icon: GraduationCap, label: 'Knowledge' },
