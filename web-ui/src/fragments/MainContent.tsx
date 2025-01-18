@@ -1,4 +1,5 @@
 import React from 'react';
+import { OutputArea } from './main/OutputArea';
 
 interface MainContentProps {
   isResizing: boolean;
@@ -14,7 +15,7 @@ export const MainContent: React.FC<MainContentProps> = ({ isResizing }) => {
         />
       )}
       <div className="flex flex-1 overflow-hidden">
-        <div>Main Content</div>
+        <OutputArea />
       </div>
     </div>
   );
