@@ -8,6 +8,7 @@ import { AgentConfig } from '../lib/AgentConfig';
 import { AgentProvider } from '../context/useAgentContext';
 import { AgentBasicConfig } from '../fragments/config/AgentBasicConfig';
 import LLMConfig from '../fragments/config/LlmConfig';
+import { DatasourceConfig } from '../fragments/config/DatasourceConfig';
 
 function AlphaStudioContent() {
 
@@ -31,7 +32,7 @@ function AlphaStudioContent() {
   // Available sections configuration
   const sections: NavSection[] = [
     { id: 'info', icon: Bot, label: 'Info', component: AgentBasicConfig },
-    { id: 'data', icon: Database, label: 'Data' },
+    { id: 'data', icon: Database, label: 'Data', component: DatasourceConfig },
     { id: 'llm', icon: Brain, label: 'LLM', component: LLMConfig },
     //{ id: 'triggers', icon: Zap, label: 'Triggers', component: TriggersConfig },
     //{ id: 'actions', icon: Rocket, label: 'Actions', component: ActionsConfig },
