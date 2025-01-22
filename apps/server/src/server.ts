@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 import cors from '@fastify/cors';
-
+import { runAgent } from '@alphaarc/langchain-runtime';
 const app = fastify({
   logger: true
 });
@@ -9,8 +9,6 @@ app.register(cors, {
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 });
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getRemoteLogger = () => {
 
@@ -34,24 +32,15 @@ const getRemoteLogger = () => {
   }
 }
 
-const runAgent = async (logger) => {
-
-
-  logger.log('INFO', 'Agent started running.');
-
-  await sleep(2000);
-
-  logger.log('INFO', 'Agent finished running.');
-
-  logger.close();
-}
-
 const run = async () => {
   console.log('Starting server...');
 
   app.post('/api/run', async (request, reply) => {
     const { logger } = getRemoteLogger();
-    runAgent(logger);
+
+    const config = request.body;
+    console.log("type of config", typeof config);
+    runAgent({ logger, config });
 
     return new Response(logger.readable, {
       headers: {
