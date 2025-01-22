@@ -5,6 +5,9 @@ async function runAgentWithStreamedResults(config: any) {
   const response = await fetch(`${host}/api/run`, {
     method: 'POST',
     body: JSON.stringify(config),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
   if (!response.body) {
     throw new Error('ReadableStream not supported');
