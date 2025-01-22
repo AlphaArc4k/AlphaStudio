@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 async function runAgentWithStreamedResults(config: any) {
-  const response = await fetch('/api/run', {
+  const host = 'http://127.0.0.1:3000'
+  const response = await fetch(`${host}/api/run`, {
     method: 'POST',
     body: JSON.stringify(config),
   });
