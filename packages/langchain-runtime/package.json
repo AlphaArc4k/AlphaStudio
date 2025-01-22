@@ -1,0 +1,21 @@
+{
+  "name": "@alphaarc/langchain-runtime",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.9",
+    "@langchain/langgraph": "^0.2.41",
+    "@langchain/openai": "^0.3.17",
+    "zod": "^3.24.1",
+    "@alphaarc/types": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
