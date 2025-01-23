@@ -98,6 +98,7 @@ ${config.info.character}
 ${config.info.task}
 ${dataToJsonPrompt()}
   `
+  logger.log('SUCCESS', 'Prompt available');
   logger.log('PROMPT', prompt);
 
   logger.log('INFO', 'Invoking agent...');
@@ -115,6 +116,7 @@ ${dataToJsonPrompt()}
 
   const response = result.messages[result.messages.length - 1]?.content;
 
+  logger.log('SUCCESS', 'Agent execution completed');
   logger.log('RESULT', 'Agent execution completed', response);
 }
 
@@ -129,7 +131,6 @@ export const runAgent = async (ctx: RuntimeEnvironment) => {
     logger.log('ERROR', 'Agent execution failed: Unknown error');
   }
   finally {
-    logger.close();
   }
 
 };
