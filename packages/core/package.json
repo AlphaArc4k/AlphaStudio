@@ -1,0 +1,14 @@
+{
+  "name": "@alphaarc/core",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@alphaarc/sdk": "*",
+    "@alphaarc/types": "*",
+    "@alphaarc/langchain-runtime": "*"
+  }
+}
