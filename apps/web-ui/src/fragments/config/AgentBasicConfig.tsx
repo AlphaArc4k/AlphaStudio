@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useAgentConfig } from '../../context/useAgentContext';
 import { AgentAvatar } from '../../components/AgentAvatar';
 import { uploadProfileImage } from '../../lib/image/upload';
+import TemplateSelector from './TemplateSelector';
 
 interface InfoConfigProps {
   onUpdate?: (info: {
@@ -49,11 +50,9 @@ export const AgentBasicConfig: React.FC<InfoConfigProps> = ({ }) => {
             Back to Configuration
           </button>
         </div>
-        {/*
         <TemplateSelector
           onTemplatesChange={() => setShowTemplates(false)}
         />
-        */}
       </div>
     );
   }
