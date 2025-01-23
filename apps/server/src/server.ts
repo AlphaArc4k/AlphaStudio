@@ -1,6 +1,9 @@
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import { runAgent } from '@alphaarc/langchain-runtime';
+import { AlphaArcSDK } from '@alphaarc/sdk';
+import configUser from '../../../alpha.config';
+
 const app = fastify({
   logger: true
 });
@@ -32,15 +35,38 @@ const getRemoteLogger = () => {
   }
 }
 
+interface AppConfig {
+  apiKey: string;
+  baseURL: string;
+  host: string;
+  port: string;
+}
+
+const configDefault: AppConfig = {
+  apiKey: '',
+  baseURL: 'https://alphaarc.xyz/api/v1',
+  host: '127.0.0.1',
+  port: process.env.PORT || '3000',
+}
+
+const config: AppConfig = {
+  ...configDefault,
+  ...configUser
+}
+
 const run = async () => {
   console.log('Starting server...');
+
+  const sdk = new AlphaArcSDK({
+    apiKey: config.apiKey,
+    baseURL: config.baseURL
+  });
 
   app.post('/api/run', async (request, reply) => {
     const { logger } = getRemoteLogger();
 
     const config = request.body;
-    console.log("type of config", typeof config);
-    runAgent({ logger, config });
+    runAgent({ logger, config, sdk });
 
     return new Response(logger.readable, {
       headers: {
@@ -50,9 +76,9 @@ const run = async () => {
     })
   });
 
-  const port = parseInt(process.env.PORT || '3000', 10);
+  const port = parseInt(config.port, 10);
 
-  app.listen({ port, host: '127.0.0.1' }, (err, address) => {
+  app.listen({ port, host: config.host }, (err, address) => {
     if (err) {
       console.error(err);
       process.exit(1);
