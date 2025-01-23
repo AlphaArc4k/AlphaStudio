@@ -33,6 +33,7 @@ export const LLMConfig: React.FC = () => {
             <select 
               className="w-full bg-gray-900/50 px-4 py-2 rounded-lg border border-gray-800"
               onChange={(e) => handleChange('model' ,e.target.value)}
+              value={config.llm.model}
             >
               <option value="gpt-4o">gpt-4o</option>
               <option value="gpt-4o-mini">gpt-4o-mini</option>
