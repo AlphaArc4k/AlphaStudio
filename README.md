@@ -52,5 +52,22 @@ yarn dev
 
 UI running on `http://localhost:5173/`
 
+### Using Arc's Rig
+Currently, the [rig runtime](https://github.com/0xPlaygrounds/rig) is not part of turbo's build pipeline.
+This means you'll first have to manually build the Rust binary from `packages/arc-runtime`:
+`cargo run` / `cargo build`.
+Afterwards you can change the `runtime` field in `alpha.config.js` to `rig` and it should just work.
+
+# Limitations
+
+This is an early preview showcasing what's possible, though it currently has temporary limitations compared to running agents on the hosted version of Alpha Studio.
+- no deployments
+- saving agents not implemented
+- query tool not connected
+- twitter / X config not ported yet
+- changing port might not propagate to all components
+- metadata enrichment API not implemented
+
+
 
 Feel free to explore, experiment, and contribute! 🌟  
