@@ -1,0 +1,5 @@
+const alphaConfig /*: AlphaConfig*/ = {
+  apiKey: '<API_KEY>',
+};
+
+module.exports = alphaConfig;
