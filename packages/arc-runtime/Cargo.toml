@@ -7,6 +7,8 @@ edition = "2021"
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+reqwest = { version = "0.12.8", features = ["json"] }
+anyhow = "1.0.93"
 rig-core = "0.6.1"
 
 [package.metadata.scripts]
