@@ -9,7 +9,8 @@
   "dependencies": {
     "@fastify/cors": "^10.0.2",
     "fastify": "^5.2.1",
-    "@alphaarc/sdk": "*"
+    "@alphaarc/sdk": "*",
+    "@alphaarc/core": "*"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

@@ -1,7 +1,7 @@
 import fastify from 'fastify';
 import cors from '@fastify/cors';
-import { runAgent } from '@alphaarc/langchain-runtime';
 import { AlphaArcSDK } from '@alphaarc/sdk';
+import { AlphaArcRuntimeManager } from '@alphaarc/core';
 import configUser from '../../../alpha.config';
 
 const app = fastify({
@@ -40,6 +40,8 @@ interface AppConfig {
   baseURL: string;
   host: string;
   port: string;
+  runtime: 'langchain' | 'rig' | string;
+  binaryPath?: string;
 }
 
 const configDefault: AppConfig = {
@@ -47,6 +49,7 @@ const configDefault: AppConfig = {
   baseURL: 'https://alphaarc.xyz/api/v1',
   host: '127.0.0.1',
   port: process.env.PORT || '3000',
+  runtime: 'langchain'
 }
 
 const config: AppConfig = {
@@ -62,11 +65,28 @@ const run = async () => {
     baseURL: config.baseURL
   });
 
+  const runtimeManager = new AlphaArcRuntimeManager();
+
+  const runtimeConfig = {
+    binaryPath: config.runtime === 'rig' ? `${process.cwd()}/../../packages/arc-runtime/target/debug/arc-runtime` : '',
+    runtime: config.runtime
+  }
+
   app.post('/api/run', async (request, reply) => {
     const { logger } = getRemoteLogger();
 
     const config = request.body;
-    runAgent({ logger, config, sdk });
+
+    runtimeManager.runAgentWithRuntime(runtimeConfig, { logger, config, sdk })
+      .then(() => {
+        logger.log('SUCCESS', 'Agent execution completed');
+      })
+      .catch((err) => {
+        logger.log('ERROR', 'Agent execution failed: Unknown error');
+      })
+      .finally(() => {
+        logger.close();
+      });
 
     return new Response(logger.readable, {
       headers: {
@@ -74,6 +94,17 @@ const run = async () => {
         'Cache-Control': 'no-cache',
       }
     })
+  });
+
+  // proxy the /query endpoint to the AlphaArc API
+  app.post('/api/v1/data/query', async (request, reply) => {
+    const params : any = request.body;
+    console.log("query data", params)
+    const response = await sdk.query(params.query, params.timeInterval);
+    console.log('query result', response)
+    return {
+      ...response.data
+    }
   });
 
   const port = parseInt(config.port, 10);
