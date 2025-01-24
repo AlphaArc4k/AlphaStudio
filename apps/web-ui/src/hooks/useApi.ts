@@ -12,7 +12,9 @@ export const useApi = () => {
 
   const getUser = async () => {
     try {
-      const { data } = await axios.get(`${host}/me`)
+      const { data } = await axios.get(`${host}/me`, {
+        withCredentials: true, // include cookies
+      })
       return data
     } catch (error) {
       console.log('Failed to get user', error)
