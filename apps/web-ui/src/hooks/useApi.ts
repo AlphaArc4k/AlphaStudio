@@ -40,11 +40,21 @@ export const useApi = () => {
     }
   }
 
+  const getTwitterAuthLink = async (_aid: string) => {
+   throw new Error('not implemented')
+  }
+
+  const getTwitterAuthCallback = async (_aid: string) => {
+    throw new Error('not implemented')
+  }
+
   return {
     host,
     uploadAgentProfileImage,
     saveConfig,
     deployAgent,
-    queryData
+    queryData,
+    getTwitterAuthLink,
+    getTwitterAuthCallback
   }
 }
