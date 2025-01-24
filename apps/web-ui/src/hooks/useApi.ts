@@ -4,7 +4,7 @@ import { AgentConfig } from "../lib/AgentConfig"
 export const useApi = () => {
 
   // FIXME get from dev host + port from settings or env
-  const host = import.meta.env.MODE === 'production' ? `https://alphaarc.xyz/api/v1` : 'http://127.0.0.1:3000/api/v1'
+  const host = import.meta.env.MODE === 'production' ? `https://www.alphaarc.xyz/api/v1` : 'http://127.0.0.1:3000/api/v1'
 
   const uploadAgentProfileImage = async () => {
     throw new Error("not implemented")
