@@ -6,6 +6,7 @@ import Radio from '../../components/Radio';
 import DateTimePicker from '../../components/DateTimePicker';
 import { Table } from '../../components/Table';
 import { QueryError } from './QueryError';
+import { useApi } from '../../hooks/useApi';
 
 interface View {
   id: string;
@@ -56,6 +57,7 @@ export const DatasourceConfig: React.FC<DatabaseConfigProps> = ({
   const [queryDuration, setQueryDuration] = useState(0)
   const [queryError, setQueryError] = useState<string | undefined>(undefined)
   const [info, setInfo] = useState('')
+  const { queryData } = useApi()
 
   const handleRunQuery = async () => {
     setRunningQuery(true);
@@ -64,12 +66,15 @@ export const DatasourceConfig: React.FC<DatabaseConfigProps> = ({
     setInfo('')
     const queryStartTime = Date.now();
     try {
-      throw new Error('Not implemented');
-      /*
+      const data = await queryData(userQuery, config.data.timeRange.sliding)
+      const { result, timeInterval } = data;
+      if (result.error) {
+        setQueryError(result.error);
+        return;
+      }
       setInfo(`Using time interval ${timeInterval.date} hour offset ${timeInterval.hour} range ${timeInterval.range}`)
       setQueryResult(result.data);
       setQueryDuration(Date.now() - queryStartTime);
-      */
     } catch (error: any) {
       setQueryError(error.message);
     } finally {
