@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { useApi } from "./useApi";
 
 async function runAgentWithStreamedResults(config: any) {
-  const host = 'http://127.0.0.1:3000'
-  const response = await fetch(`${host}/api/run`, {
+  const { host } = useApi();
+  const response = await fetch(`${host}/agents/run`, {
     method: 'POST',
     body: JSON.stringify(config),
     headers: {

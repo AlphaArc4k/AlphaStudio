@@ -72,7 +72,7 @@ const run = async () => {
     runtime: config.runtime
   }
 
-  app.post('/api/run', async (request, reply) => {
+  app.post('/api/v1/agents/run', async (request, reply) => {
     const { logger } = getRemoteLogger();
 
     const config = request.body;
@@ -99,13 +99,18 @@ const run = async () => {
   // proxy the /query endpoint to the AlphaArc API
   app.post('/api/v1/data/query', async (request, reply) => {
     const params : any = request.body;
-    console.log("query data", params)
     const response = await sdk.query(params.query, params.timeInterval);
-    console.log('query result', response)
     return {
       ...response.data
     }
   });
+
+  app.post('/api/v1/agents', async (request, reply) => {
+    const config = request.body;
+    return reply.status(400).send({
+      error: 'Save not implemented'
+    });
+  })
 
   const port = parseInt(config.port, 10);
 

@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { Play, Save, Circle, Upload, CloudUpload, Rocket, AlertCircle, ExternalLink } from 'lucide-react';
 import { LoadingButton } from '../components/LoadingButton';
+import { useApi } from '../hooks/useApi';
+import { useAgentConfig } from '../context/useAgentContext';
+import { useToast } from '../hooks/useToast';
 
 interface HeaderProps {
   agentName?: string;
@@ -20,6 +23,9 @@ export const Header: React.FC<HeaderProps> = ({
   const [isDeploying, setIsDeploying] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deployEnabled, setDeployEnabled] = useState(true);
+  const { saveConfig } = useAgentConfig()
+  const { deployAgent } = useApi()
+  const { showErrorToast, showSuccessToast } = useToast()
 
   const statusColors = {
     running: 'text-green-400',
@@ -34,14 +40,19 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const onSave = async () => {
-
+    const result = await saveConfig()
+    if (result.error) {
+      showErrorToast("Failed to save agent", result.error)
+    } else {
+      showSuccessToast("Agent saved")
+    }
   }
 
   const onDeployModal = () => {
   }
 
   const onDeploy = async () => {
-    
+    await deployAgent()
   }
 
   return (

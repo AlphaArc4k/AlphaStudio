@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, ReactNode, useState } from 'react';
 import { AgentConfig } from '../lib/AgentConfig';
+import { useApi } from '../hooks/useApi';
 
 // Define all possible action types
 type AgentConfigAction =
@@ -55,7 +56,7 @@ const newConfig: AgentConfig = {
 interface AgentContextType {
   config: AgentConfig;
   updateConfig: (action: AgentConfigAction) => void;
-  saveConfig: () => Promise<void>;
+  saveConfig: () => Promise<SaveResult>;
   isSaving: boolean;
 }
 
@@ -117,20 +118,39 @@ interface AgentProviderProps {
   initialConfig?: Partial<AgentConfig>;
 }
 
+export interface SaveResult {
+  data?: any
+  error?: string
+}
+
 export const AgentProvider: React.FC<AgentProviderProps> = ({ children, initialConfig }) => {
   const initialConfigMerged = { ...newConfig, ...initialConfig };
   const [config, dispatch] = useReducer(configReducer, initialConfigMerged);
   const [isSaving, setIsSaving] = useState(false);
-
+  const { saveConfig: saveConfigApi } = useApi()
   const saveConfig = async () => {
     setIsSaving(true);
+    const result : SaveResult = {
+      data: undefined,
+      error: undefined
+    }
     try {
-      // FIXME use API
-    } catch (error) {
-      
+      const data = await saveConfigApi(config)
+      if (data.id) {
+        dispatch({
+          type: 'UPDATE_ID',
+          payload: data.id
+        })
+        window.history.replaceState({}, '', `/${data.id}`)
+      }
+      result.data = data
+    } catch (error: any) {
+      const errorMessage = error.message
+      result.error = errorMessage
     }
     finally {
       setIsSaving(false);
+      return result
     }
   }
 
