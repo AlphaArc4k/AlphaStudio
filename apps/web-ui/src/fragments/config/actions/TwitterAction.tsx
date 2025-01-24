@@ -27,7 +27,7 @@ export const TwitterAction: React.FC<TwitterActionProps> = ({
   const accountName = config.actions?.twitter?.username || '';
   const { showSuccessToast, showErrorToast } = useToast()
 
-  const handleCredentialsChange = (field: 'apiKey' | 'apiSecret' | 'enabled', value: string | boolean) => {
+  const handleTwitterConfigChanged = (field: 'apiKey' | 'apiSecret' | 'enabled', value: string | boolean) => {
     updateConfig({
       type: 'UPDATE_ACTIONS',
       payload: {
@@ -99,7 +99,7 @@ export const TwitterAction: React.FC<TwitterActionProps> = ({
                 <span className="text-sm text-gray-300">@{accountName}</span>
               </div>
               <button
-                onClick={_e => handleCredentialsChange('enabled', false)}
+                onClick={_e => handleTwitterConfigChanged('enabled', false)}
                 className="text-xs text-red-400 hover:text-red-300"
               >
                 Disconnect
@@ -146,7 +146,7 @@ export const TwitterAction: React.FC<TwitterActionProps> = ({
               <input
                 type="password"
                 value={twitterConfig?.apiKey}
-                onChange={(e) => handleCredentialsChange('apiKey', e.target.value)}
+                onChange={(e) => handleTwitterConfigChanged('apiKey', e.target.value)}
                 className="w-full px-3 py-1.5 bg-gray-900/50 rounded border border-gray-800 text-sm"
                 placeholder="Enter your API key"
               />
@@ -156,7 +156,7 @@ export const TwitterAction: React.FC<TwitterActionProps> = ({
               <input
                 type="password"
                 value={twitterConfig?.apiSecret}
-                onChange={(e) => handleCredentialsChange('apiSecret', e.target.value)}
+                onChange={(e) => handleTwitterConfigChanged('apiSecret', e.target.value)}
                 className="w-full px-3 py-1.5 bg-gray-900/50 rounded border border-gray-800 text-sm"
                 placeholder="Enter your API secret"
               />
@@ -227,5 +227,3 @@ export const TwitterAction: React.FC<TwitterActionProps> = ({
     </BaseAction>
   );
 };
-
-export default TwitterAction;

@@ -1,33 +1,47 @@
 import React from 'react';
 import { Twitter, MessageSquare, Send } from 'lucide-react';
-import TwitterAction from './TwitterAction';
 import { useAgentConfig } from '../../../context/useAgentContext';
+import { TwitterAction } from './TwitterAction';
+import { TelegramAction } from './TelegramAction';
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'error'
 
 const ActionsConfig: React.FC = () => {
 
   const { config, updateConfig } = useAgentConfig();
-  const status: ConnectionStatus = (config.actions?.twitter?.enabled && !!config.actions.twitter.accessToken) ? 'connected' : 'disconnected';
+  const twitterStatus: ConnectionStatus = (config.actions?.twitter?.enabled && !!config.actions.twitter.accessToken) ? 'connected' : 'disconnected';
+  const telegramStatus: ConnectionStatus = 'disconnected'
+
   const twitterEnabled = !config.actions?.twitter?.enabled;
+  const telegramEnabled = !config.actions?.telegram?.enabled;
   const discordEnabled = false;
-  const telegramEnabled = false;
 
   const handleToggleAction = (actionType: string) => {
-    if (actionType !== 'twitter') {
-      return;
-    }
-    updateConfig({
-      type: 'UPDATE_ACTIONS',
-      payload: {
-        twitter: {
-          apiKey: '',
-          apiSecret: '',
-          ...config.actions?.twitter,
-          enabled: !config.actions?.twitter?.enabled
+    if (actionType === 'twitter') {
+      updateConfig({
+        type: 'UPDATE_ACTIONS',
+        payload: {
+          twitter: {
+            apiKey: '',
+            apiSecret: '',
+            ...config.actions?.twitter,
+            enabled: !config.actions?.twitter?.enabled
+          }
         }
-      }
-    });
+      });
+    } else if (actionType === 'telegram') {
+      updateConfig({
+        type: 'UPDATE_ACTIONS',
+        payload: {
+          telegram: {
+            ...config.actions?.telegram,
+            enabled: !config.actions?.telegram?.enabled
+          }
+        }
+      });
+    } else {
+      throw new Error('not implemented')
+    }
   };
 
   return (
@@ -58,8 +72,7 @@ const ActionsConfig: React.FC = () => {
           </div>
           {twitterEnabled && (
             <TwitterAction
-              status={status}
-              error={undefined}
+              status={twitterStatus}
             />
           )}
         </div>
@@ -89,7 +102,7 @@ const ActionsConfig: React.FC = () => {
         }
 
         {/* Telegram Integration */}
-        {false && <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Send size={16} className="text-gray-400" />
@@ -104,13 +117,10 @@ const ActionsConfig: React.FC = () => {
                 }`} />
             </button>
           </div>
-          {telegramEnabled && (
-            <div className="p-4 bg-gray-900/50 rounded border border-gray-800">
-              Telegram configuration coming soon...
-            </div>
-          )}
+          {telegramEnabled && <TelegramAction 
+            status={telegramStatus}
+          />}
         </div>
-        }
       </div>
     </div>
   );

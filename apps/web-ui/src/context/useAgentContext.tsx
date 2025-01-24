@@ -44,6 +44,9 @@ const newConfig: AgentConfig = {
       apiKey: '',
       apiSecret: '',
     },
+    telegram: {
+      enabled: false
+    }
   },
   knowledge: {},
   tools: {
