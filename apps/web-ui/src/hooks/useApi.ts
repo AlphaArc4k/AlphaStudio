@@ -3,11 +3,20 @@ import { AgentConfig } from "../lib/AgentConfig"
 
 export const useApi = () => {
 
-  // FIXME get from settings or env
-  const host = 'http://127.0.0.1:3000/api/v1'
+  // FIXME get from dev host + port from settings or env
+  const host = import.meta.env.MODE === 'production' ? `https://alphaarc.xyz/api/v1` : 'http://127.0.0.1:3000/api/v1'
 
   const uploadAgentProfileImage = async () => {
     throw new Error("not implemented")
+  }
+
+  const getUser = async () => {
+    try {
+      const { data } = await axios.get(`${host}/me`)
+      return data
+    } catch (error) {
+      console.log('Failed to get user', error)
+    }
   }
 
   const saveConfig = async (config: AgentConfig) => {
@@ -50,6 +59,7 @@ export const useApi = () => {
 
   return {
     host,
+    getUser,
     uploadAgentProfileImage,
     saveConfig,
     deployAgent,

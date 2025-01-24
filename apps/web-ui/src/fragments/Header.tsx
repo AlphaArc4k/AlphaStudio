@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [deployEnabled, setDeployEnabled] = useState(true);
   const { saveConfig } = useAgentConfig()
-  const { deployAgent } = useApi()
+  const { deployAgent, getUser } = useApi()
   const { showErrorToast, showSuccessToast } = useToast()
 
   const statusColors = {
@@ -48,7 +48,9 @@ export const Header: React.FC<HeaderProps> = ({
     }
   }
 
-  const onDeployModal = () => {
+  const onDeployModal = async () => {
+    const user = await getUser();
+    console.log('user', user)
   }
 
   const onDeploy = async () => {
