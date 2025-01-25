@@ -51,7 +51,6 @@ const LogsContainer: React.FC<LogsContainerProps> = ({ children }) => {
         position: 'relative',
         height,
         overflow: 'auto',
-        zIndex: 998,
         display: 'flex',
         flexDirection: 'column',
       }}
