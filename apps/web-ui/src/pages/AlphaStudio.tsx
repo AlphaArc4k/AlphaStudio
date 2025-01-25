@@ -10,6 +10,9 @@ import { AgentBasicConfig } from '../fragments/config/AgentBasicConfig';
 import LLMConfig from '../fragments/config/LlmConfig';
 import { DatasourceConfig } from '../fragments/config/DatasourceConfig';
 import ActionsConfig from '../fragments/config/actions/ActionConfig';
+import { useParams } from 'react-router'
+import { useApi } from '../hooks/useApi';
+import { predefinedTemplates } from '../lib/AgentTemplates';
 
 function AlphaStudioContent() {
 
@@ -49,7 +52,7 @@ function AlphaStudioContent() {
 
   const handleMouseMove = (e: MouseEvent) => {
     if (!isResizing) return;
-    
+
     const newWidth = Math.max(200, Math.min(1200, e.clientX - 64));
     setSidebarWidth(newWidth);
   };
@@ -89,7 +92,7 @@ function AlphaStudioContent() {
   return (
     <div className="flex-1 bg-[#0D0D12] text-gray-200">
 
-      <Header 
+      <Header
         isActivated={isActivated}
       />
 
@@ -128,13 +131,41 @@ function AlphaStudioContent() {
   )
 }
 
-interface AgentStudioProps {
-  agent?: Partial<AgentConfig>;
-}
-
 // Wrap the content with the provider
-export const AlphaStudio = ({ agent }: AgentStudioProps) => (
-  <AgentProvider initialConfig={agent}>
-    <AlphaStudioContent />
-  </AgentProvider>
-)
+export const AlphaStudio = () => {
+
+  const { uuid } = useParams();
+  const { getUserAgentConfig } = useApi();
+  const [loadAgentError, setLoadAgentError] = useState('')
+  const [agent, setAgent] = useState<Partial<AgentConfig | undefined>>(undefined)
+
+  useEffect(() => {
+
+    if (!uuid) {
+      const agent = predefinedTemplates[1].config
+      setAgent(agent)
+      return
+    }
+
+    getUserAgentConfig(uuid)
+      .then(agent => setAgent(agent))
+      .catch(_e => setLoadAgentError('Unhandled error'))
+  
+    return () => {
+    }
+  }, [uuid])
+
+  if (loadAgentError) {
+    return <div>Failed to load agent</div>
+  }
+
+  if (!agent) {
+    return <div>Loading agent config {uuid}...</div>
+  }
+
+  return (
+    <AgentProvider initialConfig={agent}>
+      <AlphaStudioContent />
+    </AgentProvider>
+  )
+}

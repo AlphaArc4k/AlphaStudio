@@ -55,6 +55,11 @@ export const useApi = () => {
     return data
   }
 
+  const getUserAgentConfig = async (aid: string) => {
+    const { data } = await client.get(`/me/agents/${aid}`)
+    return data
+  }
+
   const deployAgent = async () => {
     throw new Error("not implemented")
   }
@@ -82,6 +87,7 @@ export const useApi = () => {
     fetcher,
     getUser,
     getUserAgents,
+    getUserAgentConfig,
     uploadAgentProfileImage,
     saveConfig,
     deployAgent,

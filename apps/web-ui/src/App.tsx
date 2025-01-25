@@ -2,13 +2,22 @@ import './App.css'
 import { predefinedTemplates } from './lib/AgentTemplates'
 import { AlphaStudio } from './pages/AlphaStudio'
 import { ToastContainer } from 'react-toastify'
+import { Routes, Route } from 'react-router'
+
+function NotFound() {
+  return <div style={{
+    alignSelf: 'center'
+  }}>Page not found</div>
+}
+
 function App() {
-
-  const agent = predefinedTemplates[0].config
-
   return (
-    <div style={{ height: '100vh', width: '100vw', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'red' }}>
-      <AlphaStudio agent={agent} />
+    <div style={{ height: '100vh', width: '100vw', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <Routes>
+        <Route path="/agent/:uuid" element={<AlphaStudio />} />
+        <Route path="/" element={<AlphaStudio />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
       <ToastContainer />
     </div>
   )
