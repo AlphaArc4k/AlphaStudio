@@ -5,7 +5,8 @@ import { AgentConfig } from "../lib/AgentConfig"
 export const useApi = () => {
 
   // FIXME get from dev host + port from settings or env
-  const host = import.meta.env.MODE === 'production' ? `https://www.alphaarc.xyz/api/v1` : 'http://127.0.0.1:3000/api/v1'
+  const isProd = import.meta.env.MODE === 'production'
+  const host = isProd ? `https://www.alphaarc.xyz/api/v1` : 'http://127.0.0.1:3000/api/v1'
 
   const client = axios.create({
     baseURL: host,
@@ -14,7 +15,9 @@ export const useApi = () => {
     },
   });
   
-  const fetcher = (url: string) => client.get(url).then((res) => res.data);
+  const fetcher = (url: string) => client.get(url, {
+    withCredentials: isProd // include session cookies
+  }).then((res) => res.data);
 
   const uploadAgentProfileImage = async () => {
     throw new Error("not implemented")
@@ -23,7 +26,7 @@ export const useApi = () => {
   const getUser = async () => {
     try {
       const { data } = await client.get(`/me`, {
-        withCredentials: true, // include cookies
+        withCredentials: isProd, // include session cookies
       })
       return data
     } catch (error) {
