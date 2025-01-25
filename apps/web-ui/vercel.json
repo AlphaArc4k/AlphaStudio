@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/agent/:path*",
+      "destination": "/index.html"
+    }
+  ]
+}
