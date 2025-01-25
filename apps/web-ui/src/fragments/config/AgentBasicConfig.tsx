@@ -4,6 +4,8 @@ import { useAgentConfig } from '../../context/useAgentContext';
 import { AgentAvatar } from '../../components/AgentAvatar';
 import { uploadProfileImage } from '../../lib/image/upload';
 import TemplateSelector from './TemplateSelector';
+import { VisibilityToggle } from './VisibilityToggle';
+import { useToast } from '../../hooks/useToast';
 
 interface InfoConfigProps {
   onUpdate?: (info: {
@@ -22,6 +24,7 @@ export const AgentBasicConfig: React.FC<InfoConfigProps> = ({ }) => {
 
   const [isCharacterExpanded, setIsCharacterExpanded] = useState(false);
   const [isTaskExpanded, setIsTaskExpanded] = useState(false);
+  const { showErrorToast } = useToast()
 
   const handleChange = (field: keyof typeof config.info, value: string | boolean | null) => {
     if (field === 'isPublic') {
@@ -75,10 +78,10 @@ export const AgentBasicConfig: React.FC<InfoConfigProps> = ({ }) => {
 
         <div className="space-y-4">
 
-          {/*showVisibilityToggle && <VisibilityToggle
+          <VisibilityToggle
             isPublic={config.info.isPublic || false}
             onToggle={(value) => handleChange('isPublic', value)}
-          />*/}
+          />
 
           <AgentAvatar
             currentImage={config.info.profileImage}
@@ -101,6 +104,7 @@ export const AgentBasicConfig: React.FC<InfoConfigProps> = ({ }) => {
                 console.log('Image URL:', imageUrl);
               } catch (error) {
                 console.error('Error uploading image:', error);
+                showErrorToast('Failed to upload image')
               }
             }}
             size="md"
