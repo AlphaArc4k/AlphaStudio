@@ -1,10 +1,20 @@
 import axios, { AxiosError } from "axios"
 import { AgentConfig } from "../lib/AgentConfig"
 
+// TODO use type safe isomorphic SDK vs re-implementing all routes
 export const useApi = () => {
 
   // FIXME get from dev host + port from settings or env
   const host = import.meta.env.MODE === 'production' ? `https://www.alphaarc.xyz/api/v1` : 'http://127.0.0.1:3000/api/v1'
+
+  const client = axios.create({
+    baseURL: host,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  
+  const fetcher = (url: string) => client.get(url).then((res) => res.data);
 
   const uploadAgentProfileImage = async () => {
     throw new Error("not implemented")
@@ -12,7 +22,7 @@ export const useApi = () => {
 
   const getUser = async () => {
     try {
-      const { data } = await axios.get(`${host}/me`, {
+      const { data } = await client.get(`/me`, {
         withCredentials: true, // include cookies
       })
       return data
@@ -23,7 +33,7 @@ export const useApi = () => {
 
   const saveConfig = async (config: AgentConfig) => {
     try {
-      const { data } = await axios.post(`${host}/agents`, config)
+      const { data } = await client.post(`/agents`, config)
       return {
         ...data
       }
@@ -37,12 +47,17 @@ export const useApi = () => {
     }
   }
 
+  const getUserAgents = async () => {
+    const { data } = await client.get(`/me/agents`)
+    return data
+  }
+
   const deployAgent = async () => {
     throw new Error("not implemented")
   }
 
   const queryData = async (userQuery: string, timeInterval: AgentConfig["data"]["timeRange"]["sliding"]) => {
-    const { data } = await axios.post(`${host}/data/query`, { 
+    const { data } = await client.post(`/data/query`, { 
       query: userQuery,
       timeInterval,
     });
@@ -61,7 +76,9 @@ export const useApi = () => {
 
   return {
     host,
+    fetcher,
     getUser,
+    getUserAgents,
     uploadAgentProfileImage,
     saveConfig,
     deployAgent,
