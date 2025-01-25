@@ -1,10 +1,12 @@
 "use client";
 import React, { useState } from 'react';
-import { Play, Save, Circle, Upload, CloudUpload, Rocket, AlertCircle, ExternalLink } from 'lucide-react';
+import { Save, Circle, Rocket, AlertCircle, Bot } from 'lucide-react';
 import { LoadingButton } from '../components/LoadingButton';
 import { useApi } from '../hooks/useApi';
 import { useAgentConfig } from '../context/useAgentContext';
 import { useToast } from '../hooks/useToast';
+import { Modal } from '../components/Modal';
+import { UserAgentOverviewPanel } from './UserAgentOverviewPanel';
 
 interface HeaderProps {
   agentName?: string;
@@ -26,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { saveConfig } = useAgentConfig()
   const { deployAgent, getUser } = useApi()
   const { showErrorToast, showSuccessToast } = useToast()
+  const [showLoadAgentModal, setShowLoadAgentModal] = useState(false)
 
   const statusColors = {
     running: 'text-green-400',
@@ -58,23 +61,30 @@ export const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <div 
+    <div
       style={{
         height: 50
       }}
       className="h-12 border-b border-gray-800 px-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
+      <LoadingButton
+          className="px-3 py-1.5 text-sm border border-gray-800 rounded-md hover:bg-gray-800/50 flex items-center gap-1.5"
+          onClick={() => setShowLoadAgentModal(true)}
+        >
+          <Bot size={14} />
+          My Agents
+        </LoadingButton>
         <span className="text-sm font-medium">{name || agentName}</span>
         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-900/50">
           <Circle className={`h-2 w-2 ${statusColors[status]}`} fill="currentColor" />
           <span className="text-xs text-gray-400">{statusText[status]}</span>
         </div>
 
-      {!isActivated && (
+        {!isActivated && (
           <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-yellow-500/10 border border-yellow-500/20">
             <AlertCircle size={14} className="text-yellow-500" />
             <span className="text-xs text-yellow-400">
-                {'Activate by holding 10k $ALPHA'}
+              {'Activate by holding 10k $ALPHA'}
             </span>
           </div>
         )}
@@ -104,6 +114,9 @@ export const Header: React.FC<HeaderProps> = ({
           Deploy
         </LoadingButton>
       </div>
+      <Modal isOpen={showLoadAgentModal} onClose={() => setShowLoadAgentModal(false)}>
+          <UserAgentOverviewPanel />
+      </Modal>
     </div>
   );
 };
