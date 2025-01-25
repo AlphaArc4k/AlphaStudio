@@ -10,10 +10,27 @@ export const useApi = () => {
 
   const client = axios.create({
     baseURL: host,
+    withCredentials: isProd,
     headers: {
       'Content-Type': 'application/json',
     },
   });
+
+  const post = async (url: string, data: any) => {
+    try {
+      const { data: result } = await client.post(url, {
+        ...data
+      })
+      return result
+    } catch(error: any) {
+      if (error instanceof AxiosError) {
+        const errorMessage = error.response?.data?.error
+        throw new Error(errorMessage || 'Unknown Server Error')
+      } else {
+        throw error
+      }
+    }
+  }
   
   const fetcher = (url: string) => client.get(url, {
     withCredentials: isProd // include session cookies
@@ -25,9 +42,7 @@ export const useApi = () => {
 
   const getUser = async () => {
     try {
-      const { data } = await client.get(`/me`, {
-        withCredentials: isProd, // include session cookies
-      })
+      const { data } = await client.get(`/me`)
       return data
     } catch (error) {
       console.log('Failed to get user', error)
@@ -35,19 +50,11 @@ export const useApi = () => {
   }
 
   const saveConfig = async (config: AgentConfig) => {
-    try {
-      const { data } = await client.post(`/agents`, config)
-      return {
-        ...data
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const errorMessage = error.response?.data?.error
-        throw new Error(errorMessage || 'Unknown Server Error')
-      } else {
-        throw error
-      }
+    const data = await post(`/me/agents`, config)
+    if (data.error) {
+      throw new Error(data.error)
     }
+    return data.data
   }
 
   const getUserAgents = async () => {
@@ -65,13 +72,14 @@ export const useApi = () => {
   }
 
   const queryData = async (userQuery: string, timeInterval: AgentConfig["data"]["timeRange"]["sliding"]) => {
-    const { data } = await client.post(`/data/query`, { 
+    if (!userQuery) {
+      throw new Error('Query is required.')
+    }
+    const data = await post(`/data/query`, { 
       query: userQuery,
       timeInterval,
-    });
-    return {
-      ...data
-    }
+    })
+    return data
   }
 
   const getTwitterAuthLink = async (_aid: string) => {

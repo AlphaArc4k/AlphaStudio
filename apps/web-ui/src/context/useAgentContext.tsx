@@ -59,7 +59,7 @@ const newConfig: AgentConfig = {
 interface AgentContextType {
   config: AgentConfig;
   updateConfig: (action: AgentConfigAction) => void;
-  saveConfig: () => Promise<SaveResult>;
+  saveConfig: (changes? : Partial<AgentConfig>) => Promise<SaveResult>;
   isSaving: boolean;
 }
 
@@ -131,20 +131,23 @@ export const AgentProvider: React.FC<AgentProviderProps> = ({ children, initialC
   const [config, dispatch] = useReducer(configReducer, initialConfigMerged);
   const [isSaving, setIsSaving] = useState(false);
   const { saveConfig: saveConfigApi } = useApi()
-  const saveConfig = async () => {
+  const saveConfig = async (configChanges = {}) => {
     setIsSaving(true);
     const result : SaveResult = {
       data: undefined,
       error: undefined
     }
     try {
-      const data = await saveConfigApi(config)
+      const data = await saveConfigApi({
+        ...config,
+        ...configChanges
+      })
       if (data.id) {
         dispatch({
           type: 'UPDATE_ID',
           payload: data.id
         })
-        window.history.replaceState({}, '', `/${data.id}`)
+        window.history.replaceState({}, '', `/agent/${data.id}`)
       }
       result.data = data
     } catch (error: any) {

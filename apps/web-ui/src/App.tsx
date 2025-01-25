@@ -1,5 +1,4 @@
 import './App.css'
-import { predefinedTemplates } from './lib/AgentTemplates'
 import { AlphaStudio } from './pages/AlphaStudio'
 import { ToastContainer } from 'react-toastify'
 import { Routes, Route } from 'react-router'
