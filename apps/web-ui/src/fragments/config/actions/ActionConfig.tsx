@@ -102,7 +102,7 @@ const ActionsConfig: React.FC = () => {
         }
 
         {/* Telegram Integration */}
-        <div className="flex flex-col gap-2">
+        {false && <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Send size={16} className="text-gray-400" />
@@ -121,6 +121,7 @@ const ActionsConfig: React.FC = () => {
             status={telegramStatus}
           />}
         </div>
+        }
       </div>
     </div>
   );
