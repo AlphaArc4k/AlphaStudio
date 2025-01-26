@@ -87,6 +87,7 @@ export const useApi = () => {
   }
 
   return {
+    isProd,
     host,
     fetcher,
     getUser,
