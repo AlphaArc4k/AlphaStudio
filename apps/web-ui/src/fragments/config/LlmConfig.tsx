@@ -82,6 +82,7 @@ export const LLMConfig: React.FC = () => {
             <Button onClick={handleAddDeepseek}>Add Deepseek r1</Button>
             <label className="text-sm mb-1 block">Provider</label>
             <select 
+              value={selectedProvider}
               className="w-full bg-gray-900/50 px-4 py-2 rounded-lg border border-gray-800"
               onChange={(e) => handleChange('provider', e.target.value)}
             >
