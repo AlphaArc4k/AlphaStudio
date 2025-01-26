@@ -78,12 +78,14 @@ export const useApi = () => {
     return data
   }
 
-  const getTwitterAuthLink = async (_aid: string) => {
-   throw new Error('not implemented')
+  const getTwitterAuthLink = async (aid: string) => {
+    const { data } = await client.get(`/me/agents/${aid}/integrations/x`)
+    return data?.authUrl
   }
 
-  const getTwitterAuthCallback = async (_aid: string) => {
-    throw new Error('not implemented')
+  const getTwitterAuthCallback = async (aid: string) => {
+    const { data } = await client.get(`/me/agents/${aid}/integrations/x?callback=true`)
+    return data?.callbackUrl
   }
 
   return {

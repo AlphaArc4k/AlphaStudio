@@ -51,6 +51,7 @@ export const TwitterAction: React.FC<TwitterActionProps> = ({
   };
 
   const fetchAuthLink = async () => {
+    if (!aid) return
     if (!twitterConfig?.apiKey || !twitterConfig?.apiSecret) {
       showErrorToast('API Key and API Secret are required');
       return;
@@ -68,6 +69,7 @@ export const TwitterAction: React.FC<TwitterActionProps> = ({
   }
 
   const fetchCallbackLink = async () => {
+    if (!aid) return
     try {
       const callbackUrl = await getTwitterAuthCallback(aid)
       setAuthUrls({ ...authUrls, callbackUrl: callbackUrl });

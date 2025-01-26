@@ -1,5 +1,6 @@
+import { useParams } from 'react-router'
 
 export const useAgentId = () => {
-  // FIXME get from URL
-  return '12345'
+  const { uuid } = useParams();
+  return uuid
 }
