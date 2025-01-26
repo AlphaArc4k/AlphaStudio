@@ -103,6 +103,38 @@ const run = async () => {
     })
   });
 
+  app.get('/api/v1/local/models', async (request, reply) => {
+    const models = await runtimeManager.listModels()
+    return models
+  })
+
+  app.post('/api/v1/local/models', async (request, reply) => {
+    const body = request.body
+    const stream = await runtimeManager.installModel()
+    let currentDigestDone = false
+
+    for await (const part of stream) {
+      if (part.digest) {
+        let percent = 0
+        if (part.completed && part.total) {
+          percent = Math.round((part.completed / part.total) * 100)
+        }
+        if (percent === 100 && !currentDigestDone) {
+          console.log() // Output to a new line
+          currentDigestDone = true
+        } else {
+          currentDigestDone = false
+        }
+      } else {
+        console.log('progress', part.status)
+      }
+    }
+
+    return {
+      data: 'some data'
+    }
+  })
+
   // proxy the /query endpoint to the AlphaArc API
   app.post('/api/v1/data/query', async (request, reply) => {
     try {
