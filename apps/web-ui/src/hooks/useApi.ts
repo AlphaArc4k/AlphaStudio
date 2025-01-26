@@ -67,10 +67,6 @@ export const useApi = () => {
     return data
   }
 
-  const deployAgent = async () => {
-    throw new Error("not implemented")
-  }
-
   const queryData = async (userQuery: string, timeInterval: AgentConfig["data"]["timeRange"]["sliding"]) => {
     if (!userQuery) {
       throw new Error('Query is required.')
@@ -98,7 +94,6 @@ export const useApi = () => {
     getUserAgentConfig,
     uploadAgentProfileImage,
     saveConfig,
-    deployAgent,
     queryData,
     getTwitterAuthLink,
     getTwitterAuthCallback

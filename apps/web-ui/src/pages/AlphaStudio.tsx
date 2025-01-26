@@ -162,7 +162,7 @@ export const AlphaStudio = () => {
   if (!agent) {
     return <div>Loading agent config {uuid}...</div>
   }
-
+  // console.log('start with config', agent)
   return (
     <AgentProvider initialConfig={agent}>
       <AlphaStudioContent />

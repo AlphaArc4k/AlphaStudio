@@ -3,7 +3,7 @@ import { useApi } from "./useApi";
 
 async function runAgentWithStreamedResults(config: any) {
   const { host } = useApi();
-  const response = await fetch(`${host}/agents/run`, {
+  const response = await fetch(`${host}/rpc/agents/run`, {
     method: 'POST',
     body: JSON.stringify(config),
     headers: {

@@ -82,7 +82,6 @@ export const ActiveAgentsSection: React.FC<ActiveAgentsSectionProps> = ({
 export const UserAgentOverviewPanel: React.FC<any> = () => {
 
   const { agents, isLoading, error } = useUserAgents()
-  console.log(agents, isLoading, error)
   if (error) {
     return <div>Failed to load agents</div>
   }
