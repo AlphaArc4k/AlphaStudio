@@ -1,6 +1,7 @@
 const alphaConfig /*: AlphaConfig*/ = {
   apiKey: '<API_KEY>',
-  runtime: 'langchain' // 'langchain' or 'rig'
+  runtime: 'langchain', // 'langchain' or 'rig'
+  openAiApiKey: <your key>
 };
 
 module.exports = alphaConfig;

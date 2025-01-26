@@ -45,6 +45,10 @@ yarn
 Rename `alpha.config.js.example` to `alpha.config.js`
 Add API key from [account page](https://www.alphaarc.xyz/account).
 
+#### Open AI  API key
+Setting the `openAiApiKey` in the config will overwrite keys on all configurations which makes it very convenient.
+**Running hosted agents locally:** For agent's loaded via API it is necessary to set the key since the API is currently not returning decrypted credentials.
+
 Build and start all packes and apps:
 ```bash
 yarn dev
