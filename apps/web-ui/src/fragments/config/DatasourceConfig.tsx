@@ -158,6 +158,9 @@ export const DatasourceConfig: React.FC<DatabaseConfigProps> = ({
               onChange={() => handleTimeRangeTypeChange('sliding')}
             />
             <Radio
+              style={{
+                display: 'none'
+              }}
               label="Fixed Range"
               checked={timeRange.type === 'fixed'}
               disabled={true} // Initially disabled
