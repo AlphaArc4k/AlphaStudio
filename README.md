@@ -8,7 +8,9 @@ This project is under active development.
 - **API Stability:** Expect breaking changes as APIs evolve.  
 - **Runtimes:** Currently in the proof-of-concept (POC) stage – perfect for experimentation and hacking!  
 
-## Repository Structure  
+## Repository Structure & Architecture
+
+![architecture](./assets/img/architecture.jpeg)
 
 This repository includes two main applications and several packages:  
 
