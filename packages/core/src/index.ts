@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import { AgentConfig } from '@alphaarc/types';
 import { AlphaArcSDK } from '@alphaarc/sdk';
 import { runAgent } from '@alphaarc/langchain-runtime';
+import ollama from 'ollama'
 
 // FIXME duplicated code
 export interface RuntimeEnvironment {
@@ -102,6 +103,20 @@ const runAgentBinary = async (binaryPath: string, ctx: RuntimeEnvironment) => {
 };
 
 export class AlphaArcRuntimeManager {
+
+  public async listModels() {
+    const list = await ollama.list()
+    return list
+  }
+
+  public async installModel() {
+    // FIXME hardcoded
+    const response = await ollama.pull({
+      model: 'deepseek-r1:1.5b',
+      stream: true
+    })
+    return response
+  }
 
   public async runAgentWithRuntime({
     runtime = 'langchain',
