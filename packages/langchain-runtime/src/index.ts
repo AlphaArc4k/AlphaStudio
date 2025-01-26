@@ -22,6 +22,8 @@ const isEmptyData = (data: any) => {
 const _runAgent = async (ctx: RuntimeEnvironment) => {
   const { logger, config, sdk } = ctx;
 
+  const ts_start = new Date().getTime()
+
   const apiKey = config.llm.apiKey;
 
   logger.log('INFO', 'Initializing agent...');
@@ -129,7 +131,9 @@ ${dataToJsonPrompt()}
 
   const response = result.messages[result.messages.length - 1]?.content;
 
-  logger.log('SUCCESS', 'Agent execution completed');
+  let duration =  (new Date().getTime() - ts_start) / 1000
+
+  logger.log('SUCCESS', `Agent execution completed in ${duration} sec`);
   logger.log('RESULT', 'Agent execution completed', response);
 }
 
