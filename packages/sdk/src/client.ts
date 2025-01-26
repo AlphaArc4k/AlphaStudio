@@ -10,10 +10,21 @@ export interface SDKConfig {
   headers?: Record<string, string>;
 }
 
+// Authenticated user API
+class UserApi {
+
+  constructor(private client: AxiosInstance) {}
+
+  public async getAgents() {
+    return this.client.get(`/me/agents`)
+  }
+}
+
 export class AlphaArcSDK {
  
     private client: AxiosInstance;
     public authManager: AuthManager;
+    public me: UserApi;
 
     constructor(config: SDKConfig) {
       this.authManager = new AuthManager(
@@ -31,6 +42,8 @@ export class AlphaArcSDK {
       });
 
       this.setupMiddleware();
+
+      this.me = new UserApi(this.client)
     }
 
     private setupMiddleware() {
@@ -62,8 +75,20 @@ export class AlphaArcSDK {
     }
 
     async get(url: string) {
-      const res = await this.client.get(url);
-      return res.data;
+      try {
+        const res = await this.client.get(url);
+        return { data: res.data, error: undefined };
+      } catch (error: AxiosError | any) {
+          // get response from axios error
+          if (error.response) {
+            if (!error.response.data) {
+              throw error;
+            }
+            return { data: undefined, error: error.response?.data?.error };
+          } else {
+            throw error;
+          }
+      }
     }
 
     async post(url: string, data: any) {
