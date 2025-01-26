@@ -89,3 +89,25 @@ body {
   }
 }
 
+/* Target the scrollbar */
+::-webkit-scrollbar {
+  width: 6px; /* Width of the vertical scrollbar */
+  height: 6px; /* Height of the horizontal scrollbar */
+}
+
+/* Target the scrollbar track (background area) */
+::-webkit-scrollbar-track {
+  background: #313131; /* Light background for the track */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Target the scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the thumb */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Change the thumb color when hovered */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Darker color on hover */
+}
