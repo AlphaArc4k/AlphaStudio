@@ -1,4 +1,5 @@
 import { ChatOpenAI } from "@langchain/openai";
+import { ChatOllama } from "@langchain/ollama";
 import { AgentConfig } from "@alphaarc/types";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
@@ -25,11 +26,23 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
 
   logger.log('INFO', 'Initializing agent...');
   const agentTools: Array<DynamicStructuredTool> = [];
-  const agentModel = new ChatOpenAI({
-    model: config.llm.model,
-    openAIApiKey: apiKey,
-    temperature: 0,
-  });
+
+  const provider = config.llm.provider
+  logger.log('INFO', 'Using provider: "'+config.llm.provider+ '" model: "'+config.llm.model+'"')
+  let agentModel
+  if (provider === 'ollama') {
+    agentModel = new ChatOllama({
+      model: config.llm.model,
+      temperature: 0,
+      maxRetries: 2,
+    })
+  } else {
+    agentModel = new ChatOpenAI({
+      model: config.llm.model,
+      openAIApiKey: apiKey,
+      temperature: 0,
+    });
+  }
   const agent = createReactAgent({
     llm: agentModel,
     tools: agentTools,
