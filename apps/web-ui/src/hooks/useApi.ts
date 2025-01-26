@@ -88,6 +88,18 @@ export const useApi = () => {
     return data?.callbackUrl
   }
 
+  const listLocalModels = async () => {
+    const { data } = await client.get(`/local/models`)
+    return data?.models || []
+  }
+
+  const addLocalModel = async () => {
+    const { data } = await post(`/local/models`, {
+      model: 'foo'
+    })
+    return data
+  }
+
   return {
     isProd,
     host,
@@ -99,6 +111,8 @@ export const useApi = () => {
     saveConfig,
     queryData,
     getTwitterAuthLink,
-    getTwitterAuthCallback
+    getTwitterAuthCallback,
+    listLocalModels,
+    addLocalModel
   }
 }
