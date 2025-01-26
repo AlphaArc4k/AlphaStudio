@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import { AlphaArcSDK } from '@alphaarc/sdk';
 import { AlphaArcRuntimeManager } from '@alphaarc/core';
 import configUser from '../../../alpha.config';
+import { AgentConfig } from '@alphaarc/types';
 
 const app = fastify({
   logger: true
@@ -65,6 +66,8 @@ const run = async () => {
     baseURL: config.baseURL
   });
 
+  await sdk.login()
+
   const runtimeManager = new AlphaArcRuntimeManager();
 
   const runtimeConfig = {
@@ -72,14 +75,18 @@ const run = async () => {
     runtime: config.runtime
   }
 
-  app.post('/api/v1/agents/run', async (request, reply) => {
+  app.post('/api/v1/rpc/agents/run', async (request, reply) => {
     const { logger } = getRemoteLogger();
 
-    const config = request.body;
+    const config = request.body as AgentConfig;
+
+    if(configUser.openAiApiKey && config) {
+      config.llm.apiKey = configUser.openAiApiKey
+    }
 
     runtimeManager.runAgentWithRuntime(runtimeConfig, { logger, config, sdk })
       .then(() => {
-        logger.log('SUCCESS', 'Agent execution completed');
+        // logger.log('SUCCESS', 'Agent execution completed');
       })
       .catch((err) => {
         logger.log('ERROR', 'Agent execution failed: Unknown error');
@@ -98,18 +105,51 @@ const run = async () => {
 
   // proxy the /query endpoint to the AlphaArc API
   app.post('/api/v1/data/query', async (request, reply) => {
-    const params : any = request.body;
-    const response = await sdk.query(params.query, params.timeInterval);
-    return {
-      ...response.data
+    try {
+      const params : any = request.body;
+      const response = await sdk.query(params.query, params.timeInterval);
+      return response.data;
+    } catch (error) {
+      return reply.status(500).send({
+        error: error?.message || 'Unknown Error 1'
+      });
     }
   });
 
-  app.post('/api/v1/agents', async (request, reply) => {
-    const config = request.body;
-    return reply.status(400).send({
-      error: 'Save not implemented'
-    });
+  app.get('*', async (request, reply) => {
+    if (!request.url.startsWith('/api/v1')) {
+      return reply.status(400).send({
+        error: 'Unknown API'
+      });
+    }
+    try {
+      const result = await sdk.get(request.url.replace('/api/v1', ''))
+      if (result.error) {
+        throw new Error(result.error)
+      }
+      return result.data
+    } catch (error) {
+      return reply.status(500).send({
+        error: error?.message || 'Unknown Error 1'
+      });
+    }
+  })
+
+  app.post('*', async (request, reply) => {
+    if (!request.url.startsWith('/api/v1')) {
+      return reply.status(400).send({
+        error: 'Unknown API'
+      });
+    }
+    try {
+      const data = request.body;
+      const result = await sdk.post(request.url.replace('/api/v1', ''), data)
+      return result
+    } catch (error) {
+      return reply.status(500).send({
+        error: error?.message || 'Unknown Error 2'
+      });
+    }
   })
 
   const port = parseInt(config.port, 10);
