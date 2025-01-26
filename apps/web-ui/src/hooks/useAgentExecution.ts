@@ -14,7 +14,17 @@ async function runAgentWithStreamedResults(config: any) {
     throw new Error('ReadableStream not supported');
   }
   if (!response.status.toString().startsWith('2')) {
-    throw new Error('Server stream error');
+    // get error message
+    let errorMessage = 'Server stream error'
+    try {
+      const body = await response.json()
+      if (body.error) {
+        errorMessage = body.error
+      }
+    } catch (error) {
+      
+    }
+    throw new Error(errorMessage);
   }
   return response.body
     .pipeThrough(new TextDecoderStream())
@@ -71,5 +81,5 @@ export const useAgentExecution = () => {
     }
   }
 
-  return { runAgent, isRunning, logs, prompt, messages, error };
+  return { runAgent, isRunning, logs, prompt, messages, error, resetError: () => setError('') };
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   PlayCircle, Terminal
 } from 'lucide-react';
@@ -7,6 +7,7 @@ import { useAgentConfig } from '../../context/useAgentContext';
 import { LoadingButton } from '../../components/LoadingButton';
 import { useAgentExecution } from '../../hooks/useAgentExecution';
 import LogsContainer from './LogsContainer';
+import { useToast } from '../../hooks/useToast';
 
 const styles : any = {
   container: {
@@ -124,11 +125,22 @@ export const OutputArea: React.FC = () => {
 
   const { config } = useAgentConfig();
   const [activeTab, setActiveTab] = useState('output');
-  const { runAgent, logs, messages, prompt, isRunning } = useAgentExecution();
+  const { runAgent, logs, messages, prompt, isRunning, error: executionError, resetError } = useAgentExecution();
+  const { showErrorToast } = useToast()
 
   const toggleRun = async () => {
     await runAgent(config);
   };
+
+  useEffect(() => {
+    if (!executionError) return
+    showErrorToast(executionError)
+    resetError()
+    return () => {
+
+    }
+  }, [executionError])
+  
 
   return (
     <div
