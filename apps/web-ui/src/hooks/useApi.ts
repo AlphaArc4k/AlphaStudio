@@ -54,7 +54,7 @@ export const useApi = () => {
     if (data.error) {
       throw new Error(data.error)
     }
-    return data.data
+    return data
   }
 
   const getUserAgents = async () => {
