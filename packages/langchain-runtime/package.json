@@ -7,12 +7,13 @@
     "dev": "tsc -w"
   },
   "dependencies": {
+    "@alphaarc/sdk": "*",
+    "@alphaarc/types": "*",
     "@langchain/core": "^0.3.9",
     "@langchain/langgraph": "^0.2.41",
+    "@langchain/ollama": "^0.1.5",
     "@langchain/openai": "^0.3.17",
-    "zod": "^3.24.1",
-    "@alphaarc/sdk": "*",
-    "@alphaarc/types": "*"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

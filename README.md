@@ -58,6 +58,13 @@ yarn dev
 
 UI running on `http://localhost:5173/`
 
+### Using deepseek locally
+
+Install [ollama](https://github.com/ollama/ollama) and start the app.
+
+#### Manage models 
+Go to `http://localhost:5173/models` to open the model manager and download deepseek if not available.
+
 ### Using Arc's Rig
 Currently, the [rig runtime](https://github.com/0xPlaygrounds/rig) is not part of turbo's build pipeline.
 This means you'll first have to manually build the Rust binary from `packages/arc-runtime`:

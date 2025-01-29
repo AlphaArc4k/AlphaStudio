@@ -7,8 +7,9 @@
     "dev": "tsc -w"
   },
   "dependencies": {
+    "@alphaarc/langchain-runtime": "*",
     "@alphaarc/sdk": "*",
     "@alphaarc/types": "*",
-    "@alphaarc/langchain-runtime": "*"
+    "ollama": "^0.5.12"
   }
 }

@@ -1,7 +1,8 @@
 import { spawn } from 'child_process';
-import { AgentConfig } from '@alphaarc/types';
+import { AgentConfig, Model } from '@alphaarc/types';
 import { AlphaArcSDK } from '@alphaarc/sdk';
 import { runAgent } from '@alphaarc/langchain-runtime';
+import ollama from 'ollama'
 
 // FIXME duplicated code
 export interface RuntimeEnvironment {
@@ -101,7 +102,66 @@ const runAgentBinary = async (binaryPath: string, ctx: RuntimeEnvironment) => {
   });
 };
 
+// TODO utils
+function formatBytes(bytes: number): string {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 Byte';
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)).toString());
+  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
 export class AlphaArcRuntimeManager {
+
+  public async listModels() : Promise<Model[]> {
+    const list = await ollama.list()
+    // TODO load from file or api
+    const availableModels : Model[] = [
+      {
+        name: 'deepseek-r1:8b',
+        model: 'deepseek-r1:8b',
+        status: 'available',
+        size: '4.7GB'
+      },
+      {
+        name: 'llama3.2:latest',
+        model: 'llama3.2:latest',
+        status: 'available',
+        size: '1.88GB'
+      },
+      {
+        name: 'phi4',
+        model: 'phi4',
+        status: 'available',
+        size: '9.1GB'
+      }
+    ]
+    const installedModels: Model[] = list.models.map(model => ({
+      name: model.name,
+      model: model.name,
+      status: 'installed',
+      installedAt: model.modified_at,
+      size: formatBytes(model.size),
+      details: model.details
+    }))
+    const installedModelNames = new Set(installedModels.map(m => m.name));
+  
+    // Filter out available models that are already installed
+    const newAvailableModels = availableModels.filter(model => 
+      !installedModelNames.has(model.name)
+    )
+    return [
+      ...newAvailableModels,
+      ...installedModels
+    ]
+  }
+
+  public async installModel(model: string) {
+    const response = await ollama.pull({
+      model: model,
+      stream: true
+    })
+    return response
+  }
 
   public async runAgentWithRuntime({
     runtime = 'langchain',
