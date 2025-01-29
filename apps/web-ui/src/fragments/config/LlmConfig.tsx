@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useAgentConfig } from '../../context/useAgentContext';
 import { useApi } from '../../hooks/useApi';
-import { Button } from '../../components/ui/button';
+import { Model } from '../../lib/types';
 
 export const LLMConfig: React.FC = () => {
 
   const { config, updateConfig } = useAgentConfig();
-  const { listLocalModels, addLocalModel } = useApi()
+  const { listLocalModels } = useApi()
 
   const [providerModels, setProviderModels] = useState<any>({
     openai: {
@@ -26,7 +26,7 @@ export const LLMConfig: React.FC = () => {
   useEffect(() => {
 
     listLocalModels()
-      .then(models => {
+      .then((models: Model[]) => {
         setProviderModels((_models: any) => ({
           ..._models,
           'ollama': {
@@ -36,7 +36,7 @@ export const LLMConfig: React.FC = () => {
           }
         }))
       })
-      .catch(e => {
+      .catch((e: any) => {
         console.log('failed to get local models')
       })
   
@@ -65,10 +65,6 @@ export const LLMConfig: React.FC = () => {
     }
   };
 
-  const handleAddDeepseek = async () => {
-    await addLocalModel()
-  }
-
   if (!config) {
     return <div>loading..</div>
   }
@@ -79,7 +75,6 @@ export const LLMConfig: React.FC = () => {
         <h3 className="text-sm text-blue-400 mb-3">Model Settings</h3>
         <div className="space-y-4">
           <div>
-            <Button onClick={handleAddDeepseek}>Add Deepseek r1</Button>
             <label className="text-sm mb-1 block">Provider</label>
             <select 
               value={selectedProvider}
