@@ -31,6 +31,46 @@ export const useApi = () => {
       }
     }
   }
+
+  const postWithStreamedResult = async (endpoint: string, data: any) => {
+    const response = await fetch(`${host}${endpoint}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      credentials: isProd ? 'include' : undefined,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.body) {
+      throw new Error('ReadableStream not supported');
+    }
+    if (!response.status.toString().startsWith('2')) {
+      // get error message
+      let errorMessage = 'Server stream error'
+      try {
+        const body = await response.json()
+        if (body.error) {
+          errorMessage = body.error
+        }
+      } catch (error) {
+        
+      }
+      throw new Error(errorMessage);
+    }
+    return response.body
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(new TransformStream({
+        transform(chunk, controller) {
+          // Split chunked lines for processing
+          chunk.split('\n').forEach((line) => {
+            const l = line.trim();
+            if (!l) return;
+            const obj = JSON.parse(l);
+            controller.enqueue(obj);
+          });
+        },
+      }));
+  }
   
   const fetcher = (url: string) => client.get(url, {
     withCredentials: isProd // include session cookies
@@ -90,20 +130,14 @@ export const useApi = () => {
 
   const listLocalModels = async () => {
     const { data } = await client.get(`/local/models`)
-    return data?.models || []
-  }
-
-  const addLocalModel = async () => {
-    const { data } = await post(`/local/models`, {
-      model: 'foo'
-    })
-    return data
+    return data || []
   }
 
   return {
     isProd,
     host,
     fetcher,
+    postWithStreamedResult,
     getUser,
     getUserAgents,
     getUserAgentConfig,
@@ -113,6 +147,5 @@ export const useApi = () => {
     getTwitterAuthLink,
     getTwitterAuthCallback,
     listLocalModels,
-    addLocalModel
   }
 }

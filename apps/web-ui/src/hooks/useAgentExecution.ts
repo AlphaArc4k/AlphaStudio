@@ -1,53 +1,13 @@
 import { useState } from "react";
 import { useApi } from "./useApi";
 
-async function runAgentWithStreamedResults(config: any) {
-  const { host, isProd } = useApi();
-  const response = await fetch(`${host}/rpc/agents/run`, {
-    method: 'POST',
-    body: JSON.stringify(config),
-    credentials: isProd ? 'include' : undefined,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  if (!response.body) {
-    throw new Error('ReadableStream not supported');
-  }
-  if (!response.status.toString().startsWith('2')) {
-    // get error message
-    let errorMessage = 'Server stream error'
-    try {
-      const body = await response.json()
-      if (body.error) {
-        errorMessage = body.error
-      }
-    } catch (error) {
-      
-    }
-    throw new Error(errorMessage);
-  }
-  return response.body
-    .pipeThrough(new TextDecoderStream())
-    .pipeThrough(new TransformStream({
-      transform(chunk, controller) {
-        // Split chunked lines for processing
-        chunk.split('\n').forEach((line) => {
-          const l = line.trim();
-          if (!l) return;
-          const obj = JSON.parse(l);
-          controller.enqueue(obj);
-        });
-      },
-    }));
-}
-
 export const useAgentExecution = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState<any[]>([])
   const [messages, setMessages] = useState<Array<{ type: 'user' | 'agent', content: string }>>([]);
   const [prompt, setPrompt] = useState('');
   const [error, setError] = useState('')
+  const { postWithStreamedResult } = useApi()
   const runAgent = async (config: any) => {
     setIsRunning(true);
     setMessages([]);
@@ -55,7 +15,7 @@ export const useAgentExecution = () => {
     setPrompt('');
     setError('');
     try {
-      const stream = await runAgentWithStreamedResults(config);
+      const stream = await postWithStreamedResult('/rpc/agents/run', config);
       const reader = stream.getReader();
       while (true) {
         const { done, value } = await reader.read();

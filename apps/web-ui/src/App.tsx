@@ -2,6 +2,7 @@ import './App.css'
 import { AlphaStudio } from './pages/AlphaStudio'
 import { ToastContainer } from 'react-toastify'
 import { Routes, Route } from 'react-router'
+import { ModelManager } from './pages/ModelManager'
 
 function NotFound() {
   return <div style={{
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/agent/:uuid" element={<AlphaStudio />} />
         <Route path="/" element={<AlphaStudio />} />
+        <Route path="/models" element={<ModelManager />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <ToastContainer />
