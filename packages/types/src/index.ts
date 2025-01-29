@@ -51,3 +51,18 @@ export interface AgentConfig {
     configurations: Record<string, any>;
   };
 }
+
+
+export interface Model {
+  name: string;
+  model: string,
+  description?: string;
+  version?: string;
+
+  status: 'available' | 'installed' | 'downloading' | 'error';
+  
+  downloadProgress?: number;
+  installedAt?: Date;
+  size?: string;
+  details?: any;
+}
