@@ -109,30 +109,51 @@ const run = async () => {
   })
 
   app.post('/api/v1/local/models', async (request, reply) => {
-    const body = request.body
-    const stream = await runtimeManager.installModel()
-    let currentDigestDone = false
+    const { logger } = getRemoteLogger();
+    const config = request.body as any;
+    const model = config.model;
 
-    for await (const part of stream) {
-      if (part.digest) {
-        let percent = 0
-        if (part.completed && part.total) {
-          percent = Math.round((part.completed / part.total) * 100)
-        }
-        if (percent === 100 && !currentDigestDone) {
-          console.log() // Output to a new line
-          currentDigestDone = true
+    if (!model) {
+      return reply.status(500).send({
+        error: 'Invalid model request'
+      });
+    }
+
+    const download = async () => {
+      const stream = await runtimeManager.installModel(model)
+      let currentDigestDone = false
+  
+      for await (const part of stream) {
+        if (part.digest) {
+          let percent = 0
+          if (part.completed && part.total) {
+            percent = Math.round((part.completed / part.total) * 100)
+          }
+          logger.log('progress', part.digest, percent)
+          if (percent === 100 && !currentDigestDone) {
+            //console.log() // Output to a new line
+            currentDigestDone = true
+          } else {
+            currentDigestDone = false
+          }
         } else {
-          currentDigestDone = false
+          console.log('progress', part.status)
         }
-      } else {
-        console.log('progress', part.status)
       }
     }
 
-    return {
-      data: 'some data'
-    }
+    download()
+      .then(() => console.log('finished download'))
+      .catch(e => console.error(e))
+      .finally(() => logger.close())
+
+    return new Response(logger.readable, {
+      headers: {
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'no-cache',
+      }
+    })
+
   })
 
   // proxy the /query endpoint to the AlphaArc API
