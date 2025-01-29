@@ -90,6 +90,9 @@ export const useApi = () => {
   }
 
   const saveConfig = async (config: AgentConfig) => {
+    if (config.isDeployed && config.llm.provider !== 'openai') {
+      throw new Error("Unsupported provider in deployment")
+    }
     const data = await post(`/me/agents`, config)
     if (data.error) {
       throw new Error(data.error)
