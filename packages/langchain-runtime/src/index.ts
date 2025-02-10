@@ -1,10 +1,11 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatOllama } from "@langchain/ollama";
 import { AgentConfig } from "@alphaarc/types";
-import { DynamicStructuredTool } from "@langchain/core/tools";
+import { tool } from "@langchain/core/tools";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { HumanMessage } from "@langchain/core/messages";
 import { AlphaArcSDK } from "@alphaarc/sdk";
+import { z } from 'zod';
 
 export interface RuntimeEnvironment {
   config: AgentConfig;
@@ -27,7 +28,51 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
   const apiKey = config.llm.apiKey;
 
   logger.log('INFO', 'Initializing agent...');
-  const agentTools: Array<DynamicStructuredTool> = [];
+
+  const buyToken = tool(async (input) => {
+    logger.log('INFO', `Buying token ${input.address}..`)
+    try {
+      // TODO rpc helper
+      const { data, error } = await sdk.post(`/rpc/trading/paper`, {
+        id: '1',
+        method: 'buy',
+        params: {
+          portfolio_uuid: '45ba3ed3-ed5e-43de-8ca2-a677cb034665',
+          // TODO use agent id instead agent_uuid: config.id, 
+          token_address: 'Cg93SZJkHePybZqGDuyXLf5Ag5sB2cpWfHUG8wNPpump',
+          amount: 0.1 // sol
+        }
+      })
+      if (error) {
+        logger.log('ERROR', 'buyToken() tool: ' + error)
+        return {
+          error: error,
+          status: 'error'
+        }
+      }
+      logger.log('INFO', JSON.stringify(data, null, 2))
+      return {
+        status: 'success'
+      }
+    } catch (error: any) {
+      const errorMessage = error.message
+      logger.log('ERROR', errorMessage)
+      return {
+        error: errorMessage,
+        status: 'error'
+      }
+    }
+  }, {
+    name: 'buy_token',
+    description: 'Call to buy a token.',
+    schema: z.object({
+      address: z.string().describe("Solana token address of the token to buy"),
+    })
+  })
+
+  const agentTools = [
+    buyToken
+  ];
 
   const provider = config.llm.provider
   logger.log('INFO', 'Using provider: "'+config.llm.provider+ '" model: "'+config.llm.model+'"')
@@ -57,7 +102,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
       await sdk.login()
 
       const me = await sdk.get('/me')
-      logger.log('SUCCESS', 'Logged in as: ' + me.addressShort);
+      logger.log('SUCCESS', 'Logged in as: ' + me.data.addressShort);
 
     }
   } catch (error) {
@@ -91,6 +136,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
   }
 
   const dataToJsonPrompt = () => {
+    return ''
     const jsonPrompt = `
 # Data to analyze:
 ## Time Frame:
@@ -125,9 +171,10 @@ ${dataToJsonPrompt()}
       ],
     },
     {
-      recursionLimit: 2,
+      recursionLimit: 5,
     }
   );
+  logger.log('TRACE', '', result)
 
   const response = result.messages[result.messages.length - 1]?.content;
 
