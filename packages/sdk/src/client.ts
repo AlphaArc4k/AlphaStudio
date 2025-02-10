@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { AuthManager } from "./auth";
+import EventEmitter from "events";
 
 
 export interface SDKConfig {
@@ -34,7 +35,7 @@ export class AlphaArcSDK {
 
       this.client = axios.create({
         baseURL: config.baseURL,
-        timeout: config.timeout || 10000,
+        timeout: config.timeout || 20_000,
         headers: {
           'Content-Type': 'application/json',
           ...config.headers
@@ -93,8 +94,14 @@ export class AlphaArcSDK {
 
     async post(url: string, data: any) {
       try {
-        const res = await this.client.post(url, data);
-        return { data: res.data, error: undefined };
+        const { data: result } = await this.client.post(url, data);
+
+        // handle json-rpc
+        if (result.error) {
+          return { data: undefined, error: result.error}
+        }
+
+        return { data: result, error: undefined };
       } catch (error: AxiosError | any) {
         // get response from axios error
         if (error.response) {
