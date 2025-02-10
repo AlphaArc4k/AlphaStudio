@@ -4,6 +4,7 @@ import { useApi } from "./useApi";
 export const useAgentExecution = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState<any[]>([])
+  const [trace, setTrace] = useState({})
   const [messages, setMessages] = useState<Array<{ type: 'user' | 'agent', content: string }>>([]);
   const [prompt, setPrompt] = useState('');
   const [error, setError] = useState('')
@@ -32,7 +33,12 @@ export const useAgentExecution = () => {
         }
         else if (log.type === 'RESULT') {
           setMessages(prev => [...prev, { type: 'agent', content: log.data }]);
-        } else {
+        }
+        else if (log.type === 'TRACE') {
+          console.log(log.data)
+          setTrace(log.data?.messages || [])
+        } 
+        else {
         }
       }
     } catch (error: any) {
@@ -42,5 +48,5 @@ export const useAgentExecution = () => {
     }
   }
 
-  return { runAgent, isRunning, logs, prompt, messages, error, resetError: () => setError('') };
+  return { runAgent, isRunning, logs, prompt, trace, messages, error, resetError: () => setError('') };
 }

@@ -118,6 +118,38 @@ const styles : any = {
   },
 };
 
+const TraceViewer: React.FC<any> = ({ trace }: any) => {
+  if(!trace || Object.keys(trace).length == 0) return <div>no trace info</div>
+  return (
+    <div style={{
+      padding: '.5rem'
+    }}>
+      <div>
+        {trace.map((t: any) => (
+          <div
+            key={t.kwargs.id}
+            style={{
+              marginTop: '1rem',
+              padding: 5,
+              border: '1px solid white',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <div>{t.id[2]}</div>
+            <div>{t.kwargs.content.slice(0, 100)+'...'}</div>
+            {t.kwargs.response_metadata?.tokenUsage && <div>
+              <div>Completion tokens: {t.kwargs.response_metadata.tokenUsage.completionTokens}</div>  
+              <div>Prompt tokens: {t.kwargs.response_metadata.tokenUsage.promptTokens}</div>  
+              <div>Total tokens: {t.kwargs.response_metadata.tokenUsage.totalTokens}</div>  
+            </div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export const OutputArea: React.FC = () => {
 
   // FIXME hardcoded
@@ -125,7 +157,7 @@ export const OutputArea: React.FC = () => {
 
   const { config } = useAgentConfig();
   const [activeTab, setActiveTab] = useState('output');
-  const { runAgent, logs, messages, prompt, isRunning, error: executionError, resetError } = useAgentExecution();
+  const { runAgent, logs, messages, prompt, trace, isRunning, error: executionError, resetError } = useAgentExecution();
   const { showErrorToast } = useToast()
 
   const toggleRun = async () => {
@@ -141,6 +173,13 @@ export const OutputArea: React.FC = () => {
     }
   }, [executionError])
   
+  const tabs = [
+    {value: 'output', display: 'Output'},
+    {value: 'prompt', display: 'Prompt'},
+    {value: 'trace', display: 'Trace'},
+    {value: 'logs', display: 'Logs'},
+    {value: 'portfolio', display: 'Portfolio'},
+  ]
 
   return (
     <div
@@ -149,28 +188,24 @@ export const OutputArea: React.FC = () => {
       <div style={styles.toolbar}>
         <div className="flex items-center">
           <div className="flex">
-            <button
-              onClick={() => setActiveTab('output')}
-              className={`px-4 h-12 flex items-center gap-2 text-sm font-medium border-b-2 transition-colors
-                ${activeTab === 'output'
-                  ? 'border-purple-500 text-purple-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-400'
-                }`}
-            >
-              Output
-            </button>
-            <button
-              onClick={() => setActiveTab('prompt')}
-              className={`px-4 h-12 flex items-center gap-2 text-sm font-medium border-b-2 transition-colors
-                ${activeTab === 'prompt'
-                  ? 'border-purple-500 text-purple-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-400'
-                }`}
-              disabled={!prompt}
-            >
-              Prompt
-            </button>
-
+            {
+              tabs.map(tab => (
+                <button
+                key={tab.value}
+                onClick={() => setActiveTab(tab.value)}
+                className={`px-4 h-12 flex items-center gap-2 text-sm font-medium border-b-2 transition-colors
+                  ${activeTab === tab.value
+                    ? 'border-purple-500 text-purple-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-400'
+                  }`}
+                disabled={
+                  tab.value === 'prompt' && !prompt
+                }
+              >
+                {tab.display}
+              </button>
+              ))
+            }
           </div>
         </div>
         <LoadingButton
@@ -230,6 +265,9 @@ export const OutputArea: React.FC = () => {
                 }}>{prompt}</pre>
               </div>
             </div>
+          )}
+          {activeTab === 'trace' && (
+            <TraceViewer trace={trace}/>             
           )}
         </div>
       </div>
