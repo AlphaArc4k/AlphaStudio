@@ -31,7 +31,6 @@ const styles : any = {
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
-  // You could add a toast notification here
   toast.success(<span style={{ fontSize: '.8rem'}}>{`Copied ${text}`}</span>, {
     autoClose: 500,
     theme: 'dark',

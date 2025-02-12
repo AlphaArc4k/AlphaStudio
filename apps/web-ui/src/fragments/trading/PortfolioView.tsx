@@ -129,7 +129,7 @@ export function PortfolioView() {
             {
               key: 'amount',
               header: 'Amount',
-              formatter: (value) => '$' + value.toLocaleString()
+              formatter: (value) => value.toLocaleString()
             },
             {
               key: 'value',
