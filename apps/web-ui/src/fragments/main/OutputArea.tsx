@@ -8,6 +8,7 @@ import { LoadingButton } from '../../components/LoadingButton';
 import { useAgentExecution } from '../../hooks/useAgentExecution';
 import LogsContainer from './LogsContainer';
 import { useToast } from '../../hooks/useToast';
+import { PortfolioView } from '../trading/PortfolioView';
 
 const styles : any = {
   container: {
@@ -131,7 +132,7 @@ const TraceViewer: React.FC<any> = ({ trace }: any) => {
             style={{
               marginTop: '1rem',
               padding: 5,
-              border: '1px solid white',
+              border: '1px solid #666',
               display: 'flex',
               flexDirection: 'column'
             }}
@@ -268,6 +269,9 @@ export const OutputArea: React.FC = () => {
           )}
           {activeTab === 'trace' && (
             <TraceViewer trace={trace}/>             
+          )}
+          {activeTab === 'portfolio' && (
+            <PortfolioView />
           )}
         </div>
       </div>

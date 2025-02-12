@@ -139,6 +139,7 @@ export const useApi = () => {
   return {
     isProd,
     host,
+    post,
     fetcher,
     postWithStreamedResult,
     getUser,
