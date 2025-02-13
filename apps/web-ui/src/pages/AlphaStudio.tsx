@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavSection, NavSidebar } from '../fragments/NavSidebar';
 import { ConfigPanel } from '../fragments/ConfigPanel';
-import { Bot, Brain, Database, Rocket } from 'lucide-react';
+import { Bot, Brain, Database, Rocket, Zap } from 'lucide-react';
 import { MainContent } from '../fragments/MainContent';
 import { Header } from '../fragments/Header';
 import { AgentConfig } from '../lib/AgentConfig';
@@ -13,6 +13,7 @@ import ActionsConfig from '../fragments/config/actions/ActionConfig';
 import { useParams } from 'react-router'
 import { useApi } from '../hooks/useApi';
 import { predefinedTemplates } from '../lib/AgentTemplates';
+import { TriggersConfig } from '../fragments/config/triggers/TriggersConfig';
 
 function AlphaStudioContent() {
 
@@ -28,7 +29,7 @@ function AlphaStudioContent() {
     llm: true,
     tools: false,
     info: true,
-    triggers: false,
+    triggers: true,
     actions: true
   });
 
@@ -37,7 +38,7 @@ function AlphaStudioContent() {
     { id: 'info', icon: Bot, label: 'Info', component: AgentBasicConfig },
     { id: 'data', icon: Database, label: 'Data', component: DatasourceConfig },
     { id: 'llm', icon: Brain, label: 'LLM', component: LLMConfig },
-    //{ id: 'triggers', icon: Zap, label: 'Triggers', component: TriggersConfig },
+    { id: 'triggers', icon: Zap, label: 'Triggers', component: TriggersConfig },
     { id: 'actions', icon: Rocket, label: 'Actions', component: ActionsConfig },
     //{ id: 'knowledge', icon: GraduationCap, label: 'Knowledge' },
     //{ id: 'code', icon: Code, label: 'Code' },
@@ -162,7 +163,7 @@ export const AlphaStudio = () => {
   if (!agent) {
     return <div>Loading agent config {uuid}...</div>
   }
-  // console.log('start with config', agent)
+  console.log('start with config', agent)
   return (
     <AgentProvider initialConfig={agent}>
       <AlphaStudioContent />
