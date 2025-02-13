@@ -3,7 +3,7 @@ import cors from '@fastify/cors';
 import { AlphaArcSDK } from '@alphaarc/sdk';
 import { AlphaArcRuntimeManager } from '@alphaarc/core';
 import configUser from '../../../alpha.config';
-import { AgentConfig } from '@alphaarc/types';
+import { AgentConfig, AgentOverrides } from '@alphaarc/types';
 
 const app = fastify({
   logger: true
@@ -58,6 +58,11 @@ const config: AppConfig = {
   ...configUser
 }
 
+interface RunConfig {
+  config: AgentConfig;
+  overrides?: AgentOverrides
+}
+
 const run = async () => {
   console.log('Starting server...');
 
@@ -78,13 +83,13 @@ const run = async () => {
   app.post('/api/v1/rpc/agents/run', async (request, reply) => {
     const { logger } = getRemoteLogger();
 
-    const config = request.body as AgentConfig;
+    const { config, overrides } = request.body as RunConfig;
 
     if(configUser.openAiApiKey && config) {
       config.llm.apiKey = configUser.openAiApiKey
     }
 
-    runtimeManager.runAgentWithRuntime(runtimeConfig, { logger, config, sdk })
+    runtimeManager.runAgentWithRuntime(runtimeConfig, { logger, config, sdk, overrides })
       .then(() => {
         // logger.log('SUCCESS', 'Agent execution completed');
       })

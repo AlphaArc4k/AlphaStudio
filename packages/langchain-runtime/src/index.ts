@@ -1,6 +1,6 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatOllama } from "@langchain/ollama";
-import { AgentConfig } from "@alphaarc/types";
+import { AgentConfig, AgentOverrides } from "@alphaarc/types";
 import { tool } from "@langchain/core/tools";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { HumanMessage } from "@langchain/core/messages";
@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 export interface RuntimeEnvironment {
   config: AgentConfig;
+  overrides: AgentOverrides;
   logger: any;
   sdk: AlphaArcSDK;
 }
@@ -21,7 +22,7 @@ const isEmptyData = (data: any) => {
 }
 
 const _runAgent = async (ctx: RuntimeEnvironment) => {
-  const { logger, config, sdk } = ctx;
+  const { logger, config, sdk, overrides } = ctx;
 
   const ts_start = new Date().getTime()
 
@@ -71,6 +72,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
   })
 
   const agentTools = [
+    // TODO populate from config
     buyToken
   ];
 
@@ -158,6 +160,7 @@ ${JSON.stringify(injectedData, null, 2)}
 ${config.info.character}
 ${config.info.task}
 ${dataToJsonPrompt()}
+${overrides?.message?.content}
   `
   logger.log('SUCCESS', 'Prompt available');
   logger.log('PROMPT', prompt);

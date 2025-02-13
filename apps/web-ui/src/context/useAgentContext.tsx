@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, ReactNode, useState } from 'react';
 import { AgentConfig } from '../lib/AgentConfig';
 import { useApi } from '../hooks/useApi';
-import { Message, useAgentExecution } from '../hooks/useAgentExecution';
+import { AgentOverrides, Message, useAgentExecution } from '../hooks/useAgentExecution';
 
 // Define all possible action types
 type AgentConfigAction =
@@ -62,7 +62,7 @@ interface AgentContextType {
   updateConfig: (action: AgentConfigAction) => void;
   saveConfig: (changes? : Partial<AgentConfig>) => Promise<SaveResult>;
   isSaving: boolean;
-  runAgent: (config: AgentConfig) => Promise<void>;
+  runAgent: (config: AgentConfig, overrides?: AgentOverrides) => Promise<void>;
   // TODO log type
   logs: any[];
   messages: Message[];

@@ -52,6 +52,15 @@ export interface AgentConfig {
   };
 }
 
+export interface Message {
+  type: 'user' | 'agent';
+  content: string 
+}
+
+export interface AgentOverrides {
+  message?: Message;
+}
+
 
 export interface Model {
   name: string;

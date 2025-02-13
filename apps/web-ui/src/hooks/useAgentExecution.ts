@@ -2,9 +2,14 @@ import { useState } from "react";
 import { useApi } from "./useApi";
 import { AgentConfig } from "../lib/AgentConfig";
 
+// TODO duplicated type definition - see types
 export interface Message {
   type: 'user' | 'agent';
   content: string 
+}
+// TODO duplicated type definition - see types
+export interface AgentOverrides {
+  message?: Message;
 }
 
 export const useAgentExecution = () => {
@@ -15,14 +20,17 @@ export const useAgentExecution = () => {
   const [prompt, setPrompt] = useState('');
   const [error, setError] = useState('')
   const { postWithStreamedResult } = useApi()
-  const runAgent = async (config: AgentConfig) => {
+  const runAgent = async (config: AgentConfig, overrides?: AgentOverrides) => {
     setIsRunning(true);
     setMessages([]);
     setLogs([]);
     setPrompt('');
     setError('');
     try {
-      const stream = await postWithStreamedResult('/rpc/agents/run', config);
+      const stream = await postWithStreamedResult('/rpc/agents/run', {
+        config,
+        overrides
+      });
       const reader = stream.getReader();
       while (true) {
         const { done, value } = await reader.read();
