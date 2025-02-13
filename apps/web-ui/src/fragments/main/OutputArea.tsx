@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import { useAgentConfig } from '../../context/useAgentContext';
 import { LoadingButton } from '../../components/LoadingButton';
-import { useAgentExecution } from '../../hooks/useAgentExecution';
 import LogsContainer from './LogsContainer';
 import { useToast } from '../../hooks/useToast';
 import { PortfolioView } from '../trading/PortfolioView';
@@ -127,14 +126,13 @@ export const OutputArea: React.FC = () => {
   // FIXME hardcoded
   const isActivated = true;
 
-  const { config } = useAgentConfig();
+  const { config, runAgent, logs, isRunning, messages, prompt, trace, executionError, resetError } = useAgentConfig();
   const [activeTab, setActiveTab] = useState('output');
-  const { runAgent, logs, messages, prompt, trace, isRunning, error: executionError, resetError } = useAgentExecution();
   const { showErrorToast } = useToast()
 
   const toggleRun = async () => {
     await runAgent(config);
-  };
+  };  
 
   useEffect(() => {
     if (!executionError) return

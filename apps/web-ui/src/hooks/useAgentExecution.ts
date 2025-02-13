@@ -1,15 +1,21 @@
 import { useState } from "react";
 import { useApi } from "./useApi";
+import { AgentConfig } from "../lib/AgentConfig";
+
+export interface Message {
+  type: 'user' | 'agent';
+  content: string 
+}
 
 export const useAgentExecution = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState<any[]>([])
   const [trace, setTrace] = useState({})
-  const [messages, setMessages] = useState<Array<{ type: 'user' | 'agent', content: string }>>([]);
+  const [messages, setMessages] = useState<Array<Message>>([]);
   const [prompt, setPrompt] = useState('');
   const [error, setError] = useState('')
   const { postWithStreamedResult } = useApi()
-  const runAgent = async (config: any) => {
+  const runAgent = async (config: AgentConfig) => {
     setIsRunning(true);
     setMessages([]);
     setLogs([]);

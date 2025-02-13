@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, ReactNode, useState } from 'react';
 import { AgentConfig } from '../lib/AgentConfig';
 import { useApi } from '../hooks/useApi';
+import { Message, useAgentExecution } from '../hooks/useAgentExecution';
 
 // Define all possible action types
 type AgentConfigAction =
@@ -61,6 +62,16 @@ interface AgentContextType {
   updateConfig: (action: AgentConfigAction) => void;
   saveConfig: (changes? : Partial<AgentConfig>) => Promise<SaveResult>;
   isSaving: boolean;
+  runAgent: (config: AgentConfig) => Promise<void>;
+  // TODO log type
+  logs: any[];
+  messages: Message[];
+  prompt?: string;
+  isRunning: boolean;
+  // TODO trace type
+  trace: any;
+  executionError?: string;
+  resetError: () => void;
 }
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
@@ -129,6 +140,7 @@ export interface SaveResult {
 export const AgentProvider: React.FC<AgentProviderProps> = ({ children, initialConfig }) => {
   const initialConfigMerged = { ...newConfig, ...initialConfig };
   const [config, dispatch] = useReducer(configReducer, initialConfigMerged);
+  const { runAgent, logs, isRunning, messages, prompt, trace, error: executionError, resetError } = useAgentExecution()
   const [isSaving, setIsSaving] = useState(false);
   const { saveConfig: saveConfigApi } = useApi()
   const saveConfig = async (configChanges = {}) => {
@@ -165,7 +177,20 @@ export const AgentProvider: React.FC<AgentProviderProps> = ({ children, initialC
   };
 
   return (
-    <AgentContext.Provider value={{ config, updateConfig, saveConfig, isSaving }}>
+    <AgentContext.Provider value={{ 
+      config, 
+      updateConfig, 
+      saveConfig, 
+      isSaving,
+      runAgent,
+      isRunning,
+      logs,
+      messages,
+      prompt,
+      trace,
+      executionError,
+      resetError
+    }}>
       {children}
     </AgentContext.Provider>
   );
