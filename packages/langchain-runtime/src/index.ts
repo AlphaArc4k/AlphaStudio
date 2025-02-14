@@ -31,8 +31,9 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
   logger.log('INFO', 'Initializing agent...');
 
   const buyToken = tool(async (input) => {
-    logger.log('INFO', `Buying token ${input.address}..`)
+    logger.log('INFO', `Buying token ${input.address} amount ${input.sol_amount} SOL..`)
     try {
+      // TODO tool settings which validates sol limits
       // TODO rpc helper
       const { data, error } = await sdk.post(`/rpc/trading/paper`, {
         id: '1',
@@ -41,7 +42,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
           portfolio_uuid: '45ba3ed3-ed5e-43de-8ca2-a677cb034665',
           // TODO use agent id instead agent_uuid: config.id, 
           token_address: 'Cg93SZJkHePybZqGDuyXLf5Ag5sB2cpWfHUG8wNPpump',
-          amount: 0.1 // sol
+          amount: input.sol_amount // sol
         }
       })
       if (error) {
@@ -68,6 +69,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
     description: 'Call to buy a token.',
     schema: z.object({
       address: z.string().describe("Solana token address of the token to buy"),
+      sol_amount: z.number().describe("The amount in SOL to buy")
     })
   })
 
