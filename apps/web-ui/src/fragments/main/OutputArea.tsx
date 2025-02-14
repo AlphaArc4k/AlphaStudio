@@ -10,6 +10,7 @@ import { useToast } from '../../hooks/useToast';
 import { PortfolioView } from '../trading/PortfolioView';
 import { LogViewer } from '../log/LogViewer';
 import { TraceViewer } from '../trace/TraceViewer';
+import { Chat } from '../chat/ChatArea';
 
 const styles : any = {
   container: {
@@ -132,7 +133,7 @@ export const OutputArea: React.FC = () => {
 
   const toggleRun = async () => {
     await runAgent(config);
-  };  
+  };
 
   useEffect(() => {
     if (!executionError) return
@@ -146,6 +147,7 @@ export const OutputArea: React.FC = () => {
   const tabs = [
     {value: 'output', display: 'Output'},
     {value: 'prompt', display: 'Prompt'},
+    {value: 'chat', display: 'Chat'},
     {value: 'trace', display: 'Trace'},
     {value: 'logs', display: 'Logs'},
     {value: 'portfolio', display: 'Portfolio'},
@@ -235,6 +237,9 @@ export const OutputArea: React.FC = () => {
                 }}>{prompt}</pre>
               </div>
             </div>
+          )}
+          {activeTab === 'chat' && (
+            <Chat agent={config} />
           )}
           {activeTab === 'trace' && (
             <TraceViewer trace={trace}/>             
