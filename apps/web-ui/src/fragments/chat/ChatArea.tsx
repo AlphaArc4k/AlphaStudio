@@ -5,7 +5,7 @@ import { useAgentConfig } from "../../context/useAgentContext";
 
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  type: 'user' | 'agent';
   content: string;
   timestamp: Date;
 }
@@ -16,12 +16,12 @@ interface ChatProps {
 
 export const Chat: React.FC<ChatProps> = ({ agent }) => {
 
-  const { runAgent } = useAgentConfig()
+  const { runAgent, messages: messagesAgent } = useAgentConfig()
 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      role: 'assistant',
+      type: 'agent',
       content: 'Hello! I\'m here to help you analyze market data and trends. What would you like to know?',
       timestamp: new Date()
     }
@@ -37,13 +37,30 @@ export const Chat: React.FC<ChatProps> = ({ agent }) => {
     scrollToBottom();
   }, [messages]);
 
+  // TODO on reload this will trigger creating duplicates - move messages to server for more persistent sessions, add a reset or id based on content
+  useEffect(() => {
+
+    // append to messages
+    const newMessages = messagesAgent.map(m => ({
+      ...m,
+      id: Date.now().toString(),
+      timestamp: new Date()
+    }))
+    setMessages(prev => [...prev, ...newMessages]);
+  
+    return () => {
+
+    }
+  }, [messagesAgent])
+  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
-      role: 'user',
+      type: 'user',
       content: input,
       timestamp: new Date()
     };
@@ -62,21 +79,10 @@ export const Chat: React.FC<ChatProps> = ({ agent }) => {
     } catch (error) {
       console.log('execution error', error)
     }
-
-    // Simulate agent response
-    setTimeout(() => {
-      const response: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'This is a simulated response. Connect your agent\'s API to get real responses.',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, response]);
-    }, 1000);
   };
 
   const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
-    const isUser = message.role === 'user';
+    const isUser = message.type === 'user';
     
     return (
       <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
@@ -91,7 +97,7 @@ export const Chat: React.FC<ChatProps> = ({ agent }) => {
         )}
         <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
           <div
-            className={`px-4 py-2 rounded-lg max-w-[80%] ${
+            className={`px-4 py-2 rounded-lg max-w ${
               isUser
                 ? 'bg-purple-500 text-white'
                 : 'bg-[#13171F] text-slate-200'
