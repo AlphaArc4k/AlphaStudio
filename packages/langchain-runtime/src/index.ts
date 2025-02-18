@@ -39,9 +39,8 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
         id: '1',
         method: 'buy',
         params: {
-          portfolio_uuid: '45ba3ed3-ed5e-43de-8ca2-a677cb034665',
-          // TODO use agent id instead agent_uuid: config.id, 
-          token_address: 'Cg93SZJkHePybZqGDuyXLf5Ag5sB2cpWfHUG8wNPpump',
+          agent_uuid: config.id,
+          token_address: input.address,
           amount: input.sol_amount // sol
         }
       })
