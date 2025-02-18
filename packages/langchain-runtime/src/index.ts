@@ -72,9 +72,50 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
     })
   })
 
+  const sellToken = tool(async (input) => {
+    logger.log('INFO', `Selling token ${input.address} amount ${input.token_amount} SOL..`)
+    try {
+      const { data, error } = await sdk.post(`/rpc/trading/paper`, {
+        id: '1',
+        method: 'sell',
+        params: {
+          agent_uuid: config.id,
+          token_address: input.address,
+          amount: input.token_amount // sol
+        }
+      })
+      if (error) {
+        logger.log('ERROR', 'buyToken() tool: ' + error)
+        return {
+          error: error,
+          status: 'error'
+        }
+      }
+      logger.log('INFO', JSON.stringify(data, null, 2))
+      return {
+        status: 'success'
+      }
+    } catch (error: any) {
+      const errorMessage = error.message
+      logger.log('ERROR', errorMessage)
+      return {
+        error: errorMessage,
+        status: 'error'
+      }
+    }
+  }, {
+    name: 'sell_token',
+    description: 'Call to sell a token.',
+    schema: z.object({
+      address: z.string().describe("Solana token address of the token to sell"),
+      token_amount: z.number().describe("The token amount to sell")
+    })
+  })
+
   const agentTools = [
     // TODO populate from config
-    buyToken
+    buyToken,
+    sellToken
   ];
 
   const provider = config.llm.provider
