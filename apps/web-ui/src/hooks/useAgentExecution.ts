@@ -1,16 +1,7 @@
 import { useState } from "react";
 import { useApi } from "./useApi";
 import { AgentConfig } from "../lib/AgentConfig";
-
-// TODO duplicated type definition - see types
-export interface Message {
-  type: 'user' | 'agent';
-  content: string 
-}
-// TODO duplicated type definition - see types
-export interface AgentOverrides {
-  message?: Message;
-}
+import { Message, AgentOverrides } from "@alphaarc/types"
 
 export const useAgentExecution = () => {
   const [isRunning, setIsRunning] = useState(false);
