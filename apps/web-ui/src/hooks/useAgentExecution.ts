@@ -3,6 +3,8 @@ import { useApi } from "./useApi";
 import { AgentConfig } from "../lib/AgentConfig";
 import { Message, AgentOverrides } from "@alphaarc/types"
 
+export type { Message, AgentOverrides }
+
 export const useAgentExecution = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState<any[]>([])
