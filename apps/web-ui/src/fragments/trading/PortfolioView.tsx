@@ -5,69 +5,25 @@ import { format } from 'date-fns';
 import { TrendingDown, TrendingUp } from 'lucide-react'
 import { shortSolanaAddress } from '../../lib/utils';
 import { CopyClipboard } from '../../components/CopyClipboard';
-
-interface Position {
-  id: string;
-  token: {
-    symbol: string;
-    name: string;
-    image?: string;
-    address: string;
-  };
-  amount: number;
-  value: number;
-  averagePrice: number;
-  currentPrice: number;
-  pnl: {
-    value: number;
-    percentage: number;
-  };
-  allocation: number;
-}
-
-interface Portfolio {
-  portfolio_sol_balance: number;
-  positions: Position[];
-}
+import { useAgentId } from '../../hooks/useAgentId';
+import { usePaperPortfolio } from '../../hooks/usePaperPortfolio';
 
 export function PortfolioView() {
   const { post } = useApi()
 
   const [trades, setTrades] = useState(undefined)
-  const [portfolio, setPortfolio] = useState<Portfolio | undefined>(undefined)
+  const agentId = useAgentId()
+  // TODO handle error
+  const { portfolio, error: _portfolioError } = usePaperPortfolio(agentId)
 
   useEffect(() => {
-
-    post('/rpc/trading/paper', {
-      id: '1',
-      method: 'getPortfolio',
-      params: {
-        agent_uuid: 'b70fbeef-25d8-470b-8715-75858013e5c9'
-      }
-    })
-      .then(p => {
-        if (p.data.result) {
-          console.log('portfolio', p)
-          setPortfolio(p.data.result)
-        } else {
-          console.log(p)
-        }
-      })
-      .catch(e => console.log(e))
-
-    return () => {
-
-    }
-  }, [])
-
-
-  useEffect(() => {
+    if (!agentId) return
 
     post('/rpc/trading/paper', {
       id: '1',
       method: 'getTrades',
       params: {
-        agent_uuid: 'b70fbeef-25d8-470b-8715-75858013e5c9'
+        agent_uuid: agentId
       }
     })
       .then(p => {
@@ -82,7 +38,7 @@ export function PortfolioView() {
     return () => {
 
     }
-  }, [])
+  }, [agentId])
 
 
   return (

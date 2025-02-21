@@ -136,6 +136,36 @@ export const useApi = () => {
     return data || []
   }
 
+  const rpc = async (endpoint: string, method: string, params: any) => {
+    const { data, error } = await post(endpoint, {
+      // TODO generate and keep track of IDs
+      id: '1',
+      method,
+      params
+    })
+    if (data?.result) {
+      console.log('portfolio', data.result)
+      return {
+        data: data.result,
+        error: undefined
+      }
+    }
+    return {
+      data: undefined,
+      error
+    }
+  }
+
+  const getPortfolioByAgentId = async (agentId: string) => {
+    const { data, error } = await rpc('/rpc/trading/paper', 'getPortfolio', {
+      agent_uuid: agentId
+    })
+    if (error) {
+      throw new Error(error)
+    }
+    return data
+  }
+
   return {
     isProd,
     host,
@@ -151,5 +181,6 @@ export const useApi = () => {
     getTwitterAuthLink,
     getTwitterAuthCallback,
     listLocalModels,
+    getPortfolioByAgentId
   }
 }
