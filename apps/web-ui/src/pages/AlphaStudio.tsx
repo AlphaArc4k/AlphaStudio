@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavSection, NavSidebar } from '../fragments/NavSidebar';
 import { ConfigPanel } from '../fragments/ConfigPanel';
-import { Bot, Brain, Database, Rocket, Zap } from 'lucide-react';
+import { Bot, Brain, Database, Rocket, Wrench, Zap } from 'lucide-react';
 import { MainContent } from '../fragments/MainContent';
 import { Header } from '../fragments/Header';
 import { AgentConfig } from '../lib/AgentConfig';
@@ -14,6 +14,7 @@ import { useParams } from 'react-router'
 import { useApi } from '../hooks/useApi';
 import { predefinedTemplates } from '../lib/AgentTemplates';
 import { TriggersConfig } from '../fragments/config/triggers/TriggersConfig';
+import { ToolsConfig } from '../fragments/config/tools/ToolsConfig';
 
 function AlphaStudioContent() {
 
@@ -27,7 +28,7 @@ function AlphaStudioContent() {
   const [enabledSections, setEnabledSections] = useState<any>({
     data: true,
     llm: true,
-    tools: false,
+    tools: true,
     info: true,
     triggers: true,
     actions: true
@@ -42,7 +43,7 @@ function AlphaStudioContent() {
     { id: 'actions', icon: Rocket, label: 'Actions', component: ActionsConfig },
     //{ id: 'knowledge', icon: GraduationCap, label: 'Knowledge' },
     //{ id: 'code', icon: Code, label: 'Code' },
-    //{ id: 'tools', icon: Wrench, label: 'Tools' },
+    { id: 'tools', icon: Wrench, label: 'Tools', component: ToolsConfig },
   ];
 
   // Resize handlers
