@@ -15,6 +15,7 @@ import { useApi } from '../hooks/useApi';
 import { predefinedTemplates } from '../lib/AgentTemplates';
 import { TriggersConfig } from '../fragments/config/triggers/TriggersConfig';
 import { ToolsConfig } from '../fragments/config/tools/ToolsConfig';
+import { Spinner } from '../components/Spinner';
 
 function AlphaStudioContent() {
 
@@ -133,6 +134,29 @@ function AlphaStudioContent() {
   )
 }
 
+function LoadAgentView({ uuid }: any) {
+  return (
+    <div className="flex flex-col flex-1 p-4 items-center bg-[#0D0D12] text-gray-200">
+      <div
+        style={{
+          border: '1px solid grey',
+          borderRadius: 5
+        }}
+        className='flex flex-col p-4 items-center'
+      >
+        <Bot />
+        <div 
+          className='m-4'
+        >Loading agent config...</div>
+        <pre
+          className='m-4'
+        >{uuid}</pre>
+        <Spinner />
+      </div>
+    </div>
+  )
+}
+
 // Wrap the content with the provider
 export const AlphaStudio = () => {
 
@@ -162,7 +186,7 @@ export const AlphaStudio = () => {
   }
 
   if (!agent) {
-    return <div>Loading agent config {uuid}...</div>
+    return <LoadAgentView uuid={uuid} />
   }
   console.log('start with config', agent)
   return (
