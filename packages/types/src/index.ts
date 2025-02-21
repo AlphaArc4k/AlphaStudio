@@ -43,6 +43,9 @@ export interface AgentConfig {
       accessToken?: string;
       accessSecret?: string;
       username?: string;
+    },
+    telegram?: {
+      enabled?: boolean
     }
   };
   knowledge: any;
