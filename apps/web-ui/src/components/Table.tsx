@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spinner } from './Spinner';
 
 interface ColumnDefinition<T> {
   key: keyof T | string;
@@ -48,9 +49,7 @@ export function Table<T extends Record<string, any>>({
     return (
       <div className="rounded-l border border-slate-800 bg-slate-800/50 p-4">
         {title && <h2 className="text-lg font-semibold">{title}</h2>}
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
-        </div>
+        <Spinner />
       </div>
     );
   }
