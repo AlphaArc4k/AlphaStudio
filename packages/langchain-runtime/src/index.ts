@@ -6,6 +6,7 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { HumanMessage } from "@langchain/core/messages";
 import { AlphaArcSDK } from "@alphaarc/sdk";
 import { z } from 'zod';
+import { MemorySaver } from "@langchain/langgraph";
 
 export interface RuntimeEnvironment {
   config: AgentConfig;
@@ -21,6 +22,8 @@ const isEmptyData = (data: any) => {
   return false;
 }
 
+const memory = new MemorySaver()
+
 const _runAgent = async (ctx: RuntimeEnvironment) => {
   const { logger, config, sdk, overrides } = ctx;
 
@@ -31,7 +34,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
   logger.log('INFO', 'Initializing agent...');
 
   const buyToken = tool(async (input) => {
-    logger.log('INFO', `Buying token ${input.address} amount ${input.sol_amount} SOL..`)
+    logger.log('TOOL', `Buying token ${input.address} amount ${input.sol_amount} SOL..`)
     try {
       // TODO tool settings which validates sol limits
       // TODO rpc helper
@@ -51,7 +54,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
           status: 'error'
         }
       }
-      logger.log('INFO', JSON.stringify(data, null, 2))
+      logger.log('TOOL', JSON.stringify(data, null, 2))
       return {
         status: 'success'
       }
@@ -73,7 +76,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
   })
 
   const sellToken = tool(async (input) => {
-    logger.log('INFO', `Selling token ${input.address} amount ${input.token_amount} SOL..`)
+    logger.log('TOOL', `Selling token ${input.address} amount ${input.token_amount} SOL..`)
     try {
       const { data, error } = await sdk.post(`/rpc/trading/paper`, {
         id: '1',
@@ -91,7 +94,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
           status: 'error'
         }
       }
-      logger.log('INFO', JSON.stringify(data, null, 2))
+      logger.log('TOOL', JSON.stringify(data, null, 2))
       return {
         status: 'success'
       }
@@ -112,10 +115,47 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
     })
   })
 
+  const getPortfolio = tool(async (input) => {
+    logger.log('TOOL', `Loading agent portfolio`)
+    try {
+      const { data, error } = await sdk.post(`/rpc/trading/paper`, {
+        id: '1',
+        method: 'getPortfolio',
+        params: {
+          agent_uuid: config.id,
+        }
+      })
+      if (error) {
+        logger.log('ERROR', 'getPortfolio() tool: ' + error)
+        return {
+          error: error,
+          status: 'error'
+        }
+      }
+      // logger.log('TOOL', JSON.stringify(data, null, 2))
+      return {
+        status: 'success',
+        result: data
+      }
+    } catch (error: any) {
+      const errorMessage = error.message
+      logger.log('ERROR', errorMessage)
+      return {
+        error: errorMessage,
+        status: 'error'
+      }
+    }
+  }, {
+    name: 'get_portfolio',
+    description: 'Call to load paper portfolio with token positions.',
+    schema: z.object({})
+  })
+
   const agentTools = [
     // TODO populate from config
     buyToken,
-    sellToken
+    sellToken,
+    getPortfolio
   ];
 
   const provider = config.llm.provider
@@ -137,6 +177,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
   const agent = createReactAgent({
     llm: agentModel,
     tools: agentTools,
+    checkpointSaver: memory,
   });
   logger.log('INFO', 'Agent initialized.');
 
@@ -155,7 +196,7 @@ const _runAgent = async (ctx: RuntimeEnvironment) => {
 
   // get data from the SDK
   let injectedData = {};
-  if (config.data.userQuery !== undefined) {
+  if (!overrides && config.data.userQuery !== undefined) {
     const minutes = config.data.timeRange?.sliding?.minutes;
     if (!minutes) {
       logger.log('ERROR', 'Data Error: Time range not set');
@@ -217,6 +258,9 @@ ${overrides?.message?.content}
     },
     {
       recursionLimit: 5,
+      configurable: {
+        thread_id: '1'
+      }
     }
   );
   logger.log('TRACE', '', result)

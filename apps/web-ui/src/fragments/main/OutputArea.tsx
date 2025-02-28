@@ -1,7 +1,11 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import {
-  PlayCircle, Terminal
+  Check,
+  HelpCircle,
+  Info,
+  PlayCircle, Terminal,
+  Wrench
 } from 'lucide-react';
 import { useAgentConfig } from '../../context/useAgentContext';
 import { LoadingButton } from '../../components/LoadingButton';
@@ -11,8 +15,9 @@ import { PortfolioView } from '../trading/PortfolioView';
 import { LogViewer } from '../log/LogViewer';
 import { TraceViewer } from '../trace/TraceViewer';
 import { Chat } from '../chat/ChatArea';
+import { Alert } from '../../components/ui/alert';
 
-const styles : any = {
+const styles: any = {
   container: {
     display: 'flex',
     flex: 1,
@@ -104,6 +109,8 @@ const styles : any = {
     flexDirection: 'column' as const,
   },
   logEntry: {
+    display: 'flex',
+    gap: '.5rem',
     padding: '0.5rem 1rem',
     fontSize: '0.875rem',
     color: '#94a3b8',
@@ -143,14 +150,14 @@ export const OutputArea: React.FC = () => {
 
     }
   }, [executionError])
-  
+
   const tabs = [
-    {value: 'output', display: 'Output'},
-    {value: 'prompt', display: 'Prompt'},
-    {value: 'chat', display: 'Chat'},
-    {value: 'trace', display: 'Trace'},
-    {value: 'logs', display: 'Logs'},
-    {value: 'portfolio', display: 'Portfolio'},
+    { value: 'output', display: 'Output' },
+    { value: 'prompt', display: 'Prompt' },
+    { value: 'chat', display: 'Chat' },
+    { value: 'trace', display: 'Trace' },
+    { value: 'logs', display: 'Logs' },
+    { value: 'portfolio', display: 'Portfolio' },
   ]
 
   return (
@@ -163,19 +170,19 @@ export const OutputArea: React.FC = () => {
             {
               tabs.map(tab => (
                 <button
-                key={tab.value}
-                onClick={() => setActiveTab(tab.value)}
-                className={`px-4 h-12 flex items-center gap-2 text-sm font-medium border-b-2 transition-colors
+                  key={tab.value}
+                  onClick={() => setActiveTab(tab.value)}
+                  className={`px-4 h-12 flex items-center gap-2 text-sm font-medium border-b-2 transition-colors
                   ${activeTab === tab.value
-                    ? 'border-purple-500 text-purple-400'
-                    : 'border-transparent text-gray-500 hover:text-gray-400'
-                  }`}
-                disabled={
-                  tab.value === 'prompt' && !prompt
-                }
-              >
-                {tab.display}
-              </button>
+                      ? 'border-purple-500 text-purple-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-400'
+                    }`}
+                  disabled={
+                    tab.value === 'prompt' && !prompt
+                  }
+                >
+                  {tab.display}
+                </button>
               ))
             }
           </div>
@@ -190,8 +197,8 @@ export const OutputArea: React.FC = () => {
             backgroundColor: isRunning ? 'rgba(239, 68, 68, 0.1)' : 'rgba(96, 165, 250, 0.1)',
           }}
           disabled={!isActivated || isRunning}
-        > 
-          Run Agent 
+        >
+          Run Agent
         </LoadingButton>
       </div>
 
@@ -242,7 +249,7 @@ export const OutputArea: React.FC = () => {
             <Chat agent={config} />
           )}
           {activeTab === 'trace' && (
-            <TraceViewer trace={trace}/>             
+            <TraceViewer trace={trace} />
           )}
           {activeTab === 'logs' && (
             <LogViewer />
@@ -252,7 +259,7 @@ export const OutputArea: React.FC = () => {
           )}
         </div>
       </div>
-      
+
       <LogsContainer>
         <div style={styles.logsContainer}>
           <div style={styles.sectionTitle}>
@@ -269,9 +276,16 @@ export const OutputArea: React.FC = () => {
             {logs.map((log, index) => (
               <div key={index} style={styles.logEntry}>
                 <span style={{
-
+                  display: 'flex',
+                  gap: '.5rem',
+                  alignItems: 'start',
                   color: getLogColor(log.type),
-                }}>{log.type}</span> {log.message}
+                  wordBreak: 'keep-all'
+                }}>
+                  {getLogIcon(log.type)}
+                  {log.type}
+                </span> 
+                {log.message}
               </div>
             ))}
           </div>
@@ -281,12 +295,31 @@ export const OutputArea: React.FC = () => {
   )
 }
 
+const getLogIcon = (type: string) => {
+  switch(type) {
+    case 'INFO':
+      return <Info  size={24}/>;
+    case 'SUCCESS':
+      return <Check />;
+    case 'TOOL':
+      return <Wrench />;
+    case 'ERROR':
+      return <Alert />;
+    case 'WARN':
+      return <Alert />;
+    default:
+      return <HelpCircle />;
+  }
+}
+
 const getLogColor = (type: string) => {
   switch (type) {
     case 'INFO':
       return '#60a5fa';
     case 'SUCCESS':
       return '#34d399';
+    case 'TOOL':
+      return '#60a5fa';
     case 'ERROR':
       return '#ef4444';
     case 'WARN':
