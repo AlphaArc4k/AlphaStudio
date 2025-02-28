@@ -32,7 +32,7 @@ export const useAgentExecution = () => {
         if (log.status && log.status !== 200) {
           throw new Error(log.body.message);
         }
-        if (log.type === 'INFO' || log.type === 'SUCCESS' || log.type === 'ERROR' || log.type === 'WARN') {
+        if (['INFO', 'SUCCESS', 'WARN', 'ERROR', 'TOOL'].includes(log.type)) {
           setLogs(prev => [...prev, log]);
         }
         else if (log.type === 'PROMPT') {
